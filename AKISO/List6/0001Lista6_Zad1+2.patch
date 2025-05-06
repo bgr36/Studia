@@ -1,0 +1,320 @@
+From 79af2ecd72f2f6973c8cb84537bd6bbd79d39f65 Mon Sep 17 00:00:00 2001
+From: MyName <jankes040608@gmail.com>
+Date: Sun, 12 Jan 2025 03:11:05 +0100
+Subject: [PATCH] -1
+
+---
+ Makefile     |  9 ++++++++-
+ defs.h       |  6 ++++++
+ exec.c       |  7 +++++++
+ memorytest.c | 21 +++++++++++++++++++++
+ mmu.h        |  2 ++
+ proc.c       | 27 +++++++++++++++++++++++++++
+ syscall.c    |  8 ++++++++
+ syscall.h    |  4 ++++
+ testvm.c     | 15 +++++++++++++++
+ user.h       |  4 ++++
+ usys.S       |  3 +++
+ vm.c         | 25 ++++++++++++++++++++++++-
+ 12 files changed, 129 insertions(+), 2 deletions(-)
+ create mode 100644 memorytest.c
+ create mode 100644 testvm.c
+
+diff --git a/Makefile b/Makefile
+index 09d790c..08bc67a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -76,7 +76,7 @@ AS = $(TOOLPREFIX)gas
+ LD = $(TOOLPREFIX)ld
+ OBJCOPY = $(TOOLPREFIX)objcopy
+ OBJDUMP = $(TOOLPREFIX)objdump
+-CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
++CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -mno-sse -ggdb -m32 -fno-omit-frame-pointer
+ CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
+ ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
+ # FreeBSD ld wants ``elf_i386_fbsd''
+@@ -116,6 +116,7 @@ entryother: entryother.S
+ 
+ initcode: initcode.S
+ 	$(CC) $(CFLAGS) -nostdinc -I. -c initcode.S
++	$(OBJCOPY) --remove-section .note.gnu.property initcode.o
+ 	$(LD) $(LDFLAGS) -N -e start -Ttext 0 -o initcode.out initcode.o
+ 	$(OBJCOPY) -S -O binary initcode.out initcode
+ 	$(OBJDUMP) -S initcode.o > initcode.asm
+@@ -146,6 +147,7 @@ vectors.S: vectors.pl
+ ULIB = ulib.o usys.o printf.o umalloc.o
+ 
+ _%: %.o $(ULIB)
++	$(OBJCOPY) --remove-section .note.gnu.property ulib.o
+ 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $@ $^
+ 	$(OBJDUMP) -S $@ > $*.asm
+ 	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
+@@ -165,7 +167,12 @@ mkfs: mkfs.c fs.h
+ # http://www.gnu.org/software/make/manual/html_node/Chained-Rules.html
+ .PRECIOUS: %.o
+ 
++#Dodane expr i vmtest
++
+ UPROGS=\
++ 	_memorytest\
++	_testvm\
++	_expr\
+ 	_cat\
+ 	_echo\
+ 	_forktest\
+diff --git a/defs.h b/defs.h
+index 82fb982..679b521 100644
+--- a/defs.h
++++ b/defs.h
+@@ -186,5 +186,11 @@ void            switchkvm(void);
+ int             copyout(pde_t*, uint, void*, uint);
+ void            clearpteu(pde_t *pgdir, char *uva);
+ 
++//Dodane
++void            vmprint(pde_t *pgdir);
++typedef unsigned int pte_t;
++pte_t    *walkpgdir(pde_t *pgdir, const void *va, int alloc);
++
++
+ // number of elements in fixed-size array
+ #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
+diff --git a/exec.c b/exec.c
+index b40134f..698c0aa 100644
+--- a/exec.c
++++ b/exec.c
+@@ -1,3 +1,4 @@
++//#include "vm.h"
+ #include "types.h"
+ #include "param.h"
+ #include "memlayout.h"
+@@ -99,6 +100,12 @@ exec(char *path, char **argv)
+   curproc->sz = sz;
+   curproc->tf->eip = elf.entry;  // main
+   curproc->tf->esp = sp;
++
++  //modyfikacja
++  cprintf("exec - pgdir %p\n", curproc->pgdir);
++  vmprint(pgdir);
++  //tutaj
++
+   switchuvm(curproc);
+   freevm(oldpgdir);
+   return 0;
+diff --git a/memorytest.c b/memorytest.c
+new file mode 100644
+index 0000000..caaf8c7
+--- /dev/null
++++ b/memorytest.c
+@@ -0,0 +1,21 @@
++#include "types.h"
++#include "stat.h"
++#include "user.h"
++
++int main() {
++  int used_virtual = usedvp();
++  int used_physical = usedpp();
++
++  printf(1, "Liczba uzytych stron wirtualnych: %d\n", used_virtual);
++  printf(1, "Liczba uzytych stron fizycznych: %d\n", used_physical);
++
++  sbrk(4096);
++  used_virtual = usedvp();
++  used_physical = usedpp();
++
++  printf(1, "Po przydzieleniu jednej strony:\n");
++  printf(1, "Liczba uzytych stron wirtualnych: %d\n", used_virtual);
++  printf(1, "Liczba uzytych stron fizycznych: %d\n", used_physical);
++
++  exit();
++}
+diff --git a/mmu.h b/mmu.h
+index a82d8e2..a07112a 100644
+--- a/mmu.h
++++ b/mmu.h
+@@ -178,4 +178,6 @@ struct gatedesc {
+   (gate).off_31_16 = (uint)(off) >> 16;                  \
+ }
+ 
++
++
+ #endif
+diff --git a/proc.c b/proc.c
+index 806b1b1..e3c65b3 100644
+--- a/proc.c
++++ b/proc.c
+@@ -7,6 +7,7 @@
+ #include "proc.h"
+ #include "spinlock.h"
+ 
++
+ struct {
+   struct spinlock lock;
+   struct proc proc[NPROC];
+@@ -247,6 +248,11 @@ exit(void)
+   end_op();
+   curproc->cwd = 0;
+ 
++  //modyfikacja
++  cprintf("exit - pgdir %p\n", curproc->pgdir);
++  vmprint(curproc->pgdir);
++  //tutaj
++
+   acquire(&ptable.lock);
+ 
+   // Parent might be sleeping in wait().
+@@ -532,3 +538,24 @@ procdump(void)
+     cprintf("\n");
+   }
+ }
++
++//Moje
++int sys_usedvp(void) {
++  struct proc *p = myproc();
++  return (p->sz + PGSIZE - 1) / PGSIZE; 
++}
++
++int sys_usedpp(void) {
++  struct proc *p = myproc();
++  pde_t *pgdir = p->pgdir; 
++  int used_pages = 0;
++
++  for (uint i = 0; i < p->sz; i += PGSIZE) {
++    pte_t *pte = walkpgdir(pgdir, (void *)i, 0);
++    if (pte && (*pte & PTE_P)) {
++      used_pages++;
++    }
++  }
++
++  return used_pages;
++}
+diff --git a/syscall.c b/syscall.c
+index ee85261..10174da 100644
+--- a/syscall.c
++++ b/syscall.c
+@@ -104,6 +104,10 @@ extern int sys_wait(void);
+ extern int sys_write(void);
+ extern int sys_uptime(void);
+ 
++//Moje
++extern int sys_usedvp(void);
++extern int sys_usedpp(void);
++
+ static int (*syscalls[])(void) = {
+ [SYS_fork]    sys_fork,
+ [SYS_exit]    sys_exit,
+@@ -126,6 +130,10 @@ static int (*syscalls[])(void) = {
+ [SYS_link]    sys_link,
+ [SYS_mkdir]   sys_mkdir,
+ [SYS_close]   sys_close,
++
++//Moje
++[SYS_usedvp] sys_usedvp,
++[SYS_usedpp] sys_usedpp,
+ };
+ 
+ void
+diff --git a/syscall.h b/syscall.h
+index bc5f356..49ac991 100644
+--- a/syscall.h
++++ b/syscall.h
+@@ -20,3 +20,7 @@
+ #define SYS_link   19
+ #define SYS_mkdir  20
+ #define SYS_close  21
++
++//Moje
++#define SYS_usedvp  22
++#define SYS_usedpp  23
+diff --git a/testvm.c b/testvm.c
+new file mode 100644
+index 0000000..31a0225
+--- /dev/null
++++ b/testvm.c
+@@ -0,0 +1,15 @@
++#include "types.h"
++#include "stat.h"
++#include "user.h"
++
++int main(void) {
++  printf(1, "Alokowanie pamieci z sbrk\n");
++  for (int i = 0; i < 5; i++) {
++    if (sbrk(4096) == (void*)-1) {
++      printf(1, "sbrk failed\n");
++      exit();
++    }
++    printf(1, "Alokowano strone %d\n", i + 1);
++  }
++  exit();
++}
+diff --git a/user.h b/user.h
+index 4f99c52..4226e76 100644
+--- a/user.h
++++ b/user.h
+@@ -24,6 +24,10 @@ char* sbrk(int);
+ int sleep(int);
+ int uptime(void);
+ 
++//Moje
++int usedvp(void);
++int usedpp(void);
++
+ // ulib.c
+ int stat(const char*, struct stat*);
+ char* strcpy(char*, const char*);
+diff --git a/usys.S b/usys.S
+index 8bfd8a1..eed7786 100644
+--- a/usys.S
++++ b/usys.S
+@@ -29,3 +29,6 @@ SYSCALL(getpid)
+ SYSCALL(sbrk)
+ SYSCALL(sleep)
+ SYSCALL(uptime)
++
++SYSCALL(usedvp)
++SYSCALL(usedpp)
+diff --git a/vm.c b/vm.c
+index 7134cff..2fe937f 100644
+--- a/vm.c
++++ b/vm.c
+@@ -32,7 +32,7 @@ seginit(void)
+ // Return the address of the PTE in page table pgdir
+ // that corresponds to virtual address va.  If alloc!=0,
+ // create any required page table pages.
+-static pte_t *
++pte_t *
+ walkpgdir(pde_t *pgdir, const void *va, int alloc)
+ {
+   pde_t *pde;
+@@ -385,6 +385,29 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
+   return 0;
+ }
+ 
++void 
++vmprint(pde_t *pgdir) {
++    if (!pgdir) {
++        cprintf("vmprint: pgdir is NULL\n");
++        return;
++    }
++
++    //cprintf("exec - pgdir %p\n", pgdir);
++
++    for (int i = 0; i < 512; i++) { 
++        if (pgdir[i] & PTE_P) { 
++            pte_t *pgtab = (pte_t *)P2V(PTE_ADDR(pgdir[i])); 
++            cprintf(".. %d: pde %p pa %p\n", i, pgtab, PTE_ADDR(pgdir[i]));
++
++            for (int j = 0; j < 1024; j++) { 
++                if (pgtab[j] & PTE_P) { 
++                    cprintf(".. .. %d: pte %p pa %p\n", j, &pgtab[j], PTE_ADDR(pgtab[j]));
++                }
++            }
++        }
++    }
++}
++
+ //PAGEBREAK!
+ // Blank page.
+ //PAGEBREAK!
+-- 
+2.43.0
+

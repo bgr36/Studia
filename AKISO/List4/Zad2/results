@@ -1,0 +1,4 @@
+Zad2
+- Można z wyjątkiem SIGKILL i SIGSTOP których nie da się przechwycić
+- Nie można wysłać tego sygnału do procesu 1 gdyz jest od tego chroniony bo to główny proces w systemie
+- Sygnały nie są kolejkowane

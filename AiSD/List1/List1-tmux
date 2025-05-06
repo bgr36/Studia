@@ -1,0 +1,330 @@
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1$ echo Jan Brzoska 279765
+Jan Brzoska 279765
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1$ svn export repo.cs.pwr.edu.pl/279765-dir/mk1/List1                       
+svn: E155010: The node '/home/mypc/Studia/AiSD/mk1/List1/repo.cs.pwr.edu.pl/279765-dir/mk1/List1' was not found.
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1$ svn export https:// repo.cs.pwr.edu.pl/279765-dir/mk1/List1
+svn: E170013: Unable to connect to a repository at URL 'https://'
+svn: E670002: Name or service not known
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1$ svn export https://repo.cs.pwr.edu.pl/279765-dir/mk1/List1               
+A    List1
+A    List1/Zad1
+A    List1/Zad2
+A    List1/Zad3
+A    List1/Zad1/FIFO.c
+A    List1/Zad1/LIFO.c
+A    List1/Zad2/OneWayCircular.c
+A    List1/Zad3/TwoWayCircular.c
+Exported revision 1.
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1$ cd List1/
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1$ cd Zad1
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad1$ gcc FIFO.c -Wall -pedantic -o FIFO
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad1$ ./FIFO 
+Added to Queue: 0
+Added to Queue: 1
+Added to Queue: 2
+Added to Queue: 3
+Added to Queue: 4
+Added to Queue: 5
+Added to Queue: 6
+Added to Queue: 7
+Added to Queue: 8
+Added to Queue: 9
+Added to Queue: 10
+Added to Queue: 11
+Added to Queue: 12
+Added to Queue: 13
+Added to Queue: 14
+Added to Queue: 15
+Added to Queue: 16
+Added to Queue: 17
+Added to Queue: 18
+Added to Queue: 19
+Added to Queue: 20
+Added to Queue: 21
+Added to Queue: 22
+Added to Queue: 23
+Added to Queue: 24
+Added to Queue: 25
+Added to Queue: 26
+Added to Queue: 27
+Added to Queue: 28
+Added to Queue: 29
+Added to Queue: 30
+Added to Queue: 31
+Added to Queue: 32
+Added to Queue: 33
+Added to Queue: 34
+Added to Queue: 35
+Added to Queue: 36
+Added to Queue: 37
+Added to Queue: 38
+Added to Queue: 39
+Added to Queue: 40
+Added to Queue: 41
+Added to Queue: 42
+Added to Queue: 43
+Added to Queue: 44
+Added to Queue: 45
+Added to Queue: 46
+Added to Queue: 47
+Added to Queue: 48
+Added to Queue: 49
+Taken form Queue: 0
+Taken form Queue: 1
+Taken form Queue: 2
+Taken form Queue: 3
+Taken form Queue: 4
+Taken form Queue: 5
+Taken form Queue: 6
+Taken form Queue: 7
+Taken form Queue: 8
+Taken form Queue: 9
+Taken form Queue: 10
+Taken form Queue: 11
+Taken form Queue: 12
+Taken form Queue: 13
+Taken form Queue: 14
+Taken form Queue: 15
+Taken form Queue: 16
+Taken form Queue: 17
+Taken form Queue: 18
+Taken form Queue: 19
+Taken form Queue: 20
+Taken form Queue: 21
+Taken form Queue: 22
+Taken form Queue: 23
+Taken form Queue: 24
+Taken form Queue: 25
+Taken form Queue: 26
+Taken form Queue: 27
+Taken form Queue: 28
+Taken form Queue: 29
+Taken form Queue: 30
+Taken form Queue: 31
+Taken form Queue: 32
+Taken form Queue: 33
+Taken form Queue: 34
+Taken form Queue: 35
+Taken form Queue: 36
+Taken form Queue: 37
+Taken form Queue: 38
+Taken form Queue: 39
+Taken form Queue: 40
+Taken form Queue: 41
+Taken form Queue: 42
+Taken form Queue: 43
+Taken form Queue: 44
+Taken form Queue: 45
+Taken form Queue: 46
+Taken form Queue: 47
+Taken form Queue: 48
+Taken form Queue: 49
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad1$ cd ..
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1$ cd Zad2
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad2$ gcc LIFO.c -Wall -pedantic -o LIFO                             
+cc1: fatal error: LIFO.c: No such file or directory
+compilation terminated.
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad2$ cd ..                                
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1$ cd Zad1
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad1$ gcc LIFO.c -Wall -pedantic -o LIFO                           
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad1$ ./LIFO 
+Added to Stack: 0
+Added to Stack: 1
+Added to Stack: 2
+Added to Stack: 3
+Added to Stack: 4
+Added to Stack: 5
+Added to Stack: 6
+Added to Stack: 7
+Added to Stack: 8
+Added to Stack: 9
+Added to Stack: 10
+Added to Stack: 11
+Added to Stack: 12
+Added to Stack: 13
+Added to Stack: 14
+Added to Stack: 15
+Added to Stack: 16
+Added to Stack: 17
+Added to Stack: 18
+Added to Stack: 19
+Added to Stack: 20
+Added to Stack: 21
+Added to Stack: 22
+Added to Stack: 23
+Added to Stack: 24
+Added to Stack: 25
+Added to Stack: 26
+Added to Stack: 27
+Added to Stack: 28
+Added to Stack: 29
+Added to Stack: 30
+Added to Stack: 31
+Added to Stack: 32
+Added to Stack: 33
+Added to Stack: 34
+Added to Stack: 35
+Added to Stack: 36
+Added to Stack: 37
+Added to Stack: 38
+Added to Stack: 39
+Added to Stack: 40
+Added to Stack: 41
+Added to Stack: 42
+Added to Stack: 43
+Added to Stack: 44
+Added to Stack: 45
+Added to Stack: 46
+Added to Stack: 47
+Added to Stack: 48
+Added to Stack: 49
+Taken From Stack: 49
+Taken From Stack: 48
+Taken From Stack: 47
+Taken From Stack: 46
+Taken From Stack: 45
+Taken From Stack: 44
+Taken From Stack: 43
+Taken From Stack: 42
+Taken From Stack: 41
+Taken From Stack: 40
+Taken From Stack: 39
+Taken From Stack: 38
+Taken From Stack: 37
+Taken From Stack: 36
+Taken From Stack: 35
+Taken From Stack: 34
+Taken From Stack: 33
+Taken From Stack: 32
+Taken From Stack: 31
+Taken From Stack: 30
+Taken From Stack: 29
+Taken From Stack: 28
+Taken From Stack: 27
+Taken From Stack: 26
+Taken From Stack: 25
+Taken From Stack: 24
+Taken From Stack: 23
+Taken From Stack: 22
+Taken From Stack: 21
+Taken From Stack: 20
+Taken From Stack: 19
+Taken From Stack: 18
+Taken From Stack: 17
+Taken From Stack: 16
+Taken From Stack: 15
+Taken From Stack: 14
+Taken From Stack: 13
+Taken From Stack: 12
+Taken From Stack: 11
+Taken From Stack: 10
+Taken From Stack: 9
+Taken From Stack: 8
+Taken From Stack: 7
+Taken From Stack: 6
+Taken From Stack: 5
+Taken From Stack: 4
+Taken From Stack: 3
+Taken From Stack: 2
+Taken From Stack: 1
+Taken From Stack: 0
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad1$ cd ..                                                          
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1$ cd Zad2
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad2$ gcc OneWayCircular.c -Wall -pedantic -o OneWayCircular         
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad2$ ./OneWayCircular 
+List1:
+printList: 12
+printList: 42
+printList: 65
+printList: 55
+printList: 92
+printList: 40
+printList: 34
+printList: 83
+printList: 33
+printList: 43
+List2:
+printList: 54
+printList: 22
+printList: 53
+printList: 71
+printList: 89
+printList: 56
+printList: 48
+printList: 39
+printList: 24
+printList: 77
+List3:
+printList: 12
+printList: 42
+printList: 65
+printList: 55
+printList: 92
+printList: 40
+printList: 34
+printList: 83
+printList: 33
+printList: 43
+printList: 54
+printList: 22
+printList: 53
+printList: 71
+printList: 89
+printList: 56
+printList: 48
+printList: 39
+printList: 24
+printList: 77
+Averag comparisons: 4755.438000
+Averag comparisons: 9567.957000
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad2$ cd ..
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1$ cd Zad3
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad3$ gcc TwoWayCircular.c -Wall -pedantic -o TwoWayCircular         
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad3$ ./TwoWayCircular 
+List1:
+printList: 12
+printList: 77
+printList: 24
+printList: 39
+printList: 48
+printList: 56
+printList: 89
+printList: 71
+printList: 53
+printList: 22
+List2:
+printList: 54
+printList: 43
+printList: 33
+printList: 83
+printList: 34
+printList: 40
+printList: 92
+printList: 55
+printList: 65
+printList: 42
+List3:
+printList: 12
+printList: 77
+printList: 24
+printList: 39
+printList: 48
+printList: 56
+printList: 89
+printList: 71
+printList: 53
+printList: 22
+printList: 54
+printList: 43
+printList: 33
+printList: 83
+printList: 34
+printList: 40
+printList: 92
+printList: 55
+printList: 65
+printList: 42
+Averag comparisons: 4964.974000
+Averag comparisons: 9463.080000
+mypc@mypc-VirtualBox:~/Studia/AiSD/mk1/List1/List1/Zad3$ tmux capture-pane -p -S'-' -E'-' -J > List1-tmux               
+

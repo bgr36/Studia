@@ -1,0 +1,161 @@
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3$ svn export https://repo.cs.pwr.edu.pl/279765-dir/mk1/List3
+A    List3
+A    List3/Zad1_2_3
+A    List3/Zad4
+A    List3/Zad5
+A    List3/Zad1_2_3/Makefile
+A    List3/Zad1_2_3/randomGenerator.c
+A    List3/Zad1_2_3/random_select.c
+A    List3/Zad1_2_3/select.c
+A    List3/Zad1_2_3/select3.c
+A    List3/Zad1_2_3/select7.c
+A    List3/Zad1_2_3/select9.c
+A    List3/Zad4/Makefile
+A    List3/Zad4/binarySearch.c
+A    List3/Zad4/sortedGenerator.c
+A    List3/Zad5/Makefile
+A    List3/Zad5/dualPivotQuickSort.c
+A    List3/Zad5/dualPivotQuickSortSelect.c
+A    List3/Zad5/quickSort.c
+A    List3/Zad5/quickSortSelect.c
+A    List3/Zad5/randomGenerator.c
+A    List3/Zad5/reverseSortedGenerator.c
+A    List3/Zad5/sortedGenerator.c
+Exported revision 6.
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3$ cd List3/
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3$ cd Zad1_2_3/
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad1_2_3$ make
+gcc -pedantic -Wall -I/usr/include/gsl -L/usr/lib/x86_64-linux-gnu randomGenerator.c -lgsl -lgslcblas -lm -o randomGener
+ator
+gcc -Wall -pedantic random_select.c -o random_select
+gcc -Wall -pedantic select3.c -o select3
+gcc -Wall -pedantic select7.c -o select7
+gcc -Wall -pedantic select9.c -o select9
+gcc -Wall -pedantic select.c -o select
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad1_2_3$ ./randomGenerator 25 | ./select 10
+Początkowy stan tablicy:
+14 48 15 48 23 12 5 14 2 34 33 15 1 27 37 30 10 22 32 15 6 6 0 15 4
+Końcowy stan tablicy:
+2 5 1 10 0 4 6 6 12 14 14 15 33 34 15 22 30 37 48 23 15 15 32 48 27
+Posortowany ciąg:
+0 1 2 4 5 6 6 10 12 14 14 15 15 15 15 22 23 27 30 32 33 34 37 48 48
+Porównań: 114
+Przestawień: 75
+Znaleziony element jako 10-ta statystyka pozycyjna: 14
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad1_2_3$ ./randomGenerator 25 | ./select3 10
+Początkowy stan tablicy:
+36 42 15 49 48 23 38 28 22 7 12 19 33 0 2 17 0 42 25 11 27 12 21 46 48
+Końcowy stan tablicy:
+7 0 2 0 11 12 12 15 17 19 21 23 48 49 33 22 28 42 38 25 27 36 48 46 42
+Posortowany ciąg:
+0 0 2 7 11 12 12 15 17 19 21 22 23 25 27 28 33 36 38 42 42 46 48 48 49
+Porównań: 152
+Przestawień: 79
+Znaleziony element jako 10-ta statystyka pozycyjna: 19
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad1_2_3$ ./randomGenerator 25 | ./select7 10
+Początkowy stan tablicy:
+16 40 33 2 36 43 38 36 12 27 34 23 29 4 17 25 17 13 37 5 18 32 49 13 27
+Końcowy stan tablicy:
+2 4 5 12 13 13 16 17 17 18 23 25 27 36 40 43 33 36 38 49 37 29 27 32 34
+Posortowany ciąg:
+2 4 5 12 13 13 16 17 17 18 23 25 27 27 29 32 33 34 36 36 37 38 40 43 49
+Porównań: 131
+Przestawień: 90
+Znaleziony element jako 10-ta statystyka pozycyjna: 18
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad1_2_3$ ./randomGenerator 25 | ./select9 10
+Początkowy stan tablicy:
+41 4 8 44 42 24 36 47 17 30 40 10 3 8 16 15 12 28 46 37 20 42 49 20 21
+Końcowy stan tablicy:
+4 8 3 8 10 12 15 16 17 20 20 21 24 28 30 36 46 41 44 47 37 40 42 42 49
+Posortowany ciąg:
+3 4 8 8 10 12 15 16 17 20 20 21 24 28 30 36 37 40 41 42 42 44 46 47 49
+Porównań: 157
+Przestawień: 108
+Znaleziony element jako 10-ta statystyka pozycyjna: 20
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad1_2_3$ ./randomGenerator 25 | ./random_select 10
+Początkowy stan tablicy:
+45 12 5 10 7 10 46 36 11 16 17 21 3 10 26 20 2 2 7 46 10 4 43 20 24
+Końcowy stan tablicy:
+3 2 2 4 7 7 5 10 10 10 10 11 12 16 17 20 46 24 21 46 36 45 43 20 26
+Posortowany ciąg:
+2 2 3 4 5 7 7 10 10 10 10 11 12 16 17 20 20 21 24 26 36 43 45 46 46
+Porównań: 64
+Przestawień: 53
+Znaleziony element jako 10-ta statystyka pozycyjna: 10
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad1_2_3$ cd ..
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3$ cd Zad4
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad4$ make
+gcc -pedantic -Wall -o binarySearch binarySearch.c
+gcc -pedantic -Wall -o sortedGenerator sortedGenerator.c
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad4$ ./sortedGenerator 25 | ./binarySearch 10
+Końcowy stan tablicy:
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+Znaleziono element 10 : 1
+
+Porównań: 5
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad4$ ./sortedGenerator 25 | ./binarySearch 100
+Końcowy stan tablicy:
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+Znaleziono element 100 : 0
+
+Porównań: 5
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad4$ ./sortedGenerator 25 | ./binarySearch 1
+Końcowy stan tablicy:
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+Znaleziono element 1 : 1
+
+Porównań: 4
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad4$ cd ..
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3$ cd Zad5
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad5$ make
+gcc -pedantic -Wall -o dualPivotQuickSortSelect dualPivotQuickSortSelect.c
+gcc -pedantic -Wall -o quickSort quickSort.c
+gcc -pedantic -Wall -o quickSortSelect quickSortSelect.c
+gcc -pedantic -Wall -o dualPivotQuickSort dualPivotQuickSort.c
+gcc -pedantic -Wall -I/usr/include/gsl -L/usr/lib/x86_64-linux-gnu randomGenerator.c -lgsl -lgslcblas -lm -o randomGener
+ator
+gcc -pedantic -Wall -o sortedGenerator sortedGenerator.c
+gcc -pedantic -Wall -o reverseSortedGenerator reverseSortedGenerator.c
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad5$ ./randomGenerator 25 | ./quickSortSelect
+21 40 29 36 18 44 05 33 40 00 42 21 27 37 21 28 12 04 45 27 45 02 17 09 32
+Krok 01 : 18 21 00 05 21 21 04 12 02 09 17 [27] 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 02 : 00 05 02 04 09 [12] 17 18 21 21 21 27 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 03 : 00 02 [04] 05 09 12 17 18 21 21 21 27 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 04 : [00] 02 04 05 09 12 17 18 21 21 21 27 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 05 : 00 02 04 [05] 09 12 17 18 21 21 21 27 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 06 : 00 02 04 05 09 12 17 18 [21] 21 21 27 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 07 : 00 02 04 05 09 12 [17] 18 21 21 21 27 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 08 : 00 02 04 05 09 12 17 18 21 [21] 21 27 27 28 29 32 45 33 36 40 44 45 37 40 42
+Krok 09 : 00 02 04 05 09 12 17 18 21 21 21 27 27 28 29 32 33 36 [37] 40 40 42 45 44 45
+Krok 10 : 00 02 04 05 09 12 17 18 21 21 21 27 27 28 [29] 32 33 36 37 40 40 42 45 44 45
+Krok 11 : 00 02 04 05 09 12 17 18 21 21 21 27 [27] 28 29 32 33 36 37 40 40 42 45 44 45
+Krok 12 : 00 02 04 05 09 12 17 18 21 21 21 27 27 28 29 32 [33] 36 37 40 40 42 45 44 45
+Krok 13 : 00 02 04 05 09 12 17 18 21 21 21 27 27 28 29 32 33 36 37 40 40 [42] 44 45 45
+Krok 14 : 00 02 04 05 09 12 17 18 21 21 21 27 27 28 29 32 33 36 37 [40] 40 42 44 45 45
+Krok 15 : 00 02 04 05 09 12 17 18 21 21 21 27 27 28 29 32 33 36 37 40 40 42 44 [45] 45
+00 02 04 05 09 12 17 18 21 21 21 27 27 28 29 32 33 36 37 40 40 42 44 45 45
+Tablica posortowana: 1
+25 249 414
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad5$ ./randomGenerator 25 | ./dualPivotQuickSortSelect
+Usage: ./dualPivotQuickSortSelect <printThreshold>
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad5$ ./randomGenerator 25 | ./dualPivotQuickSortSelect 20
+25 154 412
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad5$ ./randomGenerator 25 | ./dualPivotQuickSortSelect 30
+43 46 47 38 37 19 19 01 23 21 14 07 25 18 22 48 12 47 28 39 19 34 06 41 13
+Krok 01 : [01] 38 34 19 13 37 19 19 21 23 07 14 18 22 25 12 28 39 06 [41] 47 47 46 43 48
+Krok 02 : 01 [00] 19 34 37 38 07 19 19 21 23 12 14 18 22 25 06 28 [39] 41 47 47 46 43 48
+Krok 03 : 01 00 06 12 [13] 22 18 19 19 19 21 23 25 14 [28] 37 34 38 39 41 47 47 46 43 48
+Krok 04 : 01 00 [06] [12] 13 22 18 19 19 19 21 23 25 14 28 37 34 38 39 41 47 47 46 43 48
+Krok 05 : 01 00 06 12 13 [07] 19 19 19 22 14 21 23 [25] 28 37 34 38 39 41 47 47 46 43 48
+Krok 06 : 01 00 06 12 13 07 [18] 19 19 19 22 21 [23] 25 28 37 34 38 39 41 47 47 46 43 48
+Krok 07 : 01 00 06 12 13 07 18 [19] 19 19 21 [22] 23 25 28 37 34 38 39 41 47 47 46 43 48
+Krok 08 : 01 00 06 12 13 07 18 19 [19] 19 [21] 22 23 25 28 37 34 38 39 41 47 47 46 43 48
+Krok 09 : 01 00 06 12 13 07 18 19 19 19 21 22 23 25 28 34 [37] [38] 39 41 47 47 46 43 48
+Krok 10 : 01 00 06 12 13 07 18 19 19 19 21 22 23 25 28 34 37 38 39 41 43 46 [47] 47 [48]
+Krok 11 : 01 00 06 12 13 07 18 19 19 19 21 22 23 25 28 34 37 38 39 41 [43] [46] 47 47 48
+43 46 47 38 37 19 19 01 23 21 14 07 25 18 22 48 12 47 28 39 19 34 06 41 13
+01 00 06 12 13 07 18 19 19 19 21 22 23 25 28 34 37 38 39 41 43 46 47 47 48
+Tablica posortowana: 0
+25 151 468
+mypc@mypc-VirtualBox:~/Studia/AiSD/List3/List3/Zad5$ tmux capture-pane -p -S'-' -E'-' > tmux_List3
+

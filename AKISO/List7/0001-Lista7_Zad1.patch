@@ -1,0 +1,265 @@
+From 1881311ac408efc7411c21b19b7d9b103b8076df Mon Sep 17 00:00:00 2001
+From: MyName <jankes040608@gmail.com>
+Date: Tue, 28 Jan 2025 18:29:21 +0100
+Subject: [PATCH] Lista7_Zad1
+
+---
+ Makefile  |  5 ++++-
+ defs.h    |  3 +++
+ proc.c    | 52 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ proc.h    |  8 ++++++++
+ ps.c      | 22 ++++++++++++++++++++++
+ syscall.c |  6 ++++++
+ syscall.h |  3 +++
+ sysproc.c | 22 ++++++++++++++++++++++
+ usys.S    |  3 +++
+ 9 files changed, 123 insertions(+), 1 deletion(-)
+ create mode 100644 ps.c
+
+diff --git a/Makefile b/Makefile
+index 09d790c..807411b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -76,7 +76,7 @@ AS = $(TOOLPREFIX)gas
+ LD = $(TOOLPREFIX)ld
+ OBJCOPY = $(TOOLPREFIX)objcopy
+ OBJDUMP = $(TOOLPREFIX)objdump
+-CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
++CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -mno-sse -ggdb -m32 -fno-omit-frame-pointer
+ CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
+ ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
+ # FreeBSD ld wants ``elf_i386_fbsd''
+@@ -116,6 +116,7 @@ entryother: entryother.S
+ 
+ initcode: initcode.S
+ 	$(CC) $(CFLAGS) -nostdinc -I. -c initcode.S
++	$(OBJCOPY) --remove-section .note.gnu.property initcode.o
+ 	$(LD) $(LDFLAGS) -N -e start -Ttext 0 -o initcode.out initcode.o
+ 	$(OBJCOPY) -S -O binary initcode.out initcode
+ 	$(OBJDUMP) -S initcode.o > initcode.asm
+@@ -146,6 +147,7 @@ vectors.S: vectors.pl
+ ULIB = ulib.o usys.o printf.o umalloc.o
+ 
+ _%: %.o $(ULIB)
++	$(OBJCOPY) --remove-section .note.gnu.property ulib.o
+ 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $@ $^
+ 	$(OBJDUMP) -S $@ > $*.asm
+ 	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
+@@ -166,6 +168,7 @@ mkfs: mkfs.c fs.h
+ .PRECIOUS: %.o
+ 
+ UPROGS=\
++	_ps\
+ 	_cat\
+ 	_echo\
+ 	_forktest\
+diff --git a/defs.h b/defs.h
+index 82fb982..32ea766 100644
+--- a/defs.h
++++ b/defs.h
+@@ -120,6 +120,9 @@ void            userinit(void);
+ int             wait(void);
+ void            wakeup(void*);
+ void            yield(void);
++int sys_getNumProc(void);
++int sys_getMaxPid(void);
++int sys_getProcInfo(void);
+ 
+ // swtch.S
+ void            swtch(struct context**, struct context*);
+diff --git a/proc.c b/proc.c
+index 806b1b1..a7973cb 100644
+--- a/proc.c
++++ b/proc.c
+@@ -532,3 +532,55 @@ procdump(void)
+     cprintf("\n");
+   }
+ }
++
++int
++getNumProc(void){
++  struct proc *p;
++  int count = 0;
++
++  acquire(&ptable.lock);
++
++  for(p = ptable.proc;p < &ptable.proc[NPROC];p++){
++    if(p->state == EMBRYO || p->state == RUNNING || p->state == RUNNABLE || 
++       p->state == SLEEPING || p->state == ZOMBIE){
++      count++;
++    }
++  }
++  release(&ptable.lock);
++  return count;
++}
++
++int
++getMaxPid(void){
++  struct proc *p;
++  int max_pid = 0;
++
++  acquire(&ptable.lock);
++
++  for(p = ptable.proc;p < &ptable.proc[NPROC];p++){
++    if(p->state == EMBRYO || p->state == RUNNING || p->state == RUNNABLE ||
++       p->state == SLEEPING || p->state == ZOMBIE && p->pid > max_pid){
++      max_pid = p->pid;
++    }
++  }
++  release(&ptable.lock);
++  return max_pid;
++}
++
++int
++getProcInfo(int pid, struct processInfo *pinfo){
++  struct proc *p;
++  acquire(&ptable.lock);
++  for(p = ptable.proc;p < &ptable.proc[NPROC];p++){
++    if(p->pid == pid){
++      pinfo->ppid = (p->parent) ? p->parent->pid : 0;
++      pinfo->contextSwitches = p->contextSwitches;
++      pinfo->sz = p->sz;
++
++      release(&ptable.lock);
++      return 0;
++    }
++  }
++  release(&ptable.lock);
++  return -1;
++}
+\ No newline at end of file
+diff --git a/proc.h b/proc.h
+index 1647114..06070dd 100644
+--- a/proc.h
++++ b/proc.h
+@@ -34,6 +34,12 @@ struct context {
+ 
+ enum procstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
+ 
++struct processInfo {
++  int ppid;
++  int contextSwitches;
++  uint sz;
++};
++
+ // Per-process state
+ struct proc {
+   uint sz;                     // Size of process memory (bytes)
+@@ -49,6 +55,8 @@ struct proc {
+   struct file *ofile[NOFILE];  // Open files
+   struct inode *cwd;           // Current directory
+   char name[16];               // Process name (debugging)
++
++  int contextSwitches;
+ };
+ 
+ // Process memory is laid out contiguously, low addresses first:
+diff --git a/ps.c b/ps.c
+new file mode 100644
+index 0000000..c71ac0a
+--- /dev/null
++++ b/ps.c
+@@ -0,0 +1,22 @@
++#include "types.h"
++#include "stat.h"
++#include "user.h"
++#include "processInfo.h"
++
++int main(void){
++    int numProc = getNumProc();
++    int maxPid = getMaxPid();
++
++    printf(1,"Liczba procesow: %d\n",numProc);
++    printf(1,"Max pid: %d\n",maxPid);
++
++    printf(1,"PID   PPID    Context Switches    Size\n");
++
++    for(int pid = 1;pid < maxPid+1;pid++){
++        struct processInfo pinfo;
++        if(getProcInfo(pid,&pinfo) == 0){
++            printf(1,"%d   %d   %d   %d \n",pid,pinfo.ppid,pinfo.contextSwitches,pinfo.sz);
++        }
++    }
++    exit();
++}
+\ No newline at end of file
+diff --git a/syscall.c b/syscall.c
+index ee85261..7fd03ff 100644
+--- a/syscall.c
++++ b/syscall.c
+@@ -103,6 +103,9 @@ extern int sys_unlink(void);
+ extern int sys_wait(void);
+ extern int sys_write(void);
+ extern int sys_uptime(void);
++extern int getNumProc(void);
++extern int getMaxPid(void);
++extern int getProcInfo(void);
+ 
+ static int (*syscalls[])(void) = {
+ [SYS_fork]    sys_fork,
+@@ -126,6 +129,9 @@ static int (*syscalls[])(void) = {
+ [SYS_link]    sys_link,
+ [SYS_mkdir]   sys_mkdir,
+ [SYS_close]   sys_close,
++[SYS_getNumProc]   sys_getNumProc,
++[SYS_getMaxPid]    sys_getMaxPid,
++[SYS_getProcInfo]  sys_getProcInfo,
+ };
+ 
+ void
+diff --git a/syscall.h b/syscall.h
+index bc5f356..a2c3144 100644
+--- a/syscall.h
++++ b/syscall.h
+@@ -20,3 +20,6 @@
+ #define SYS_link   19
+ #define SYS_mkdir  20
+ #define SYS_close  21
++#define SYS_getNumProc 22
++#define SYS_getMaxPid 23
++#define SYS_getProcInfo 24
+diff --git a/sysproc.c b/sysproc.c
+index 0686d29..fced5c9 100644
+--- a/sysproc.c
++++ b/sysproc.c
+@@ -89,3 +89,25 @@ sys_uptime(void)
+   release(&tickslock);
+   return xticks;
+ }
++
++int
++sys_getNumProc(void){
++  return getNumProc();
++}
++
++int
++sys_getMaxPid(void){
++  return getMaxPid();
++}
++
++int
++sys_getProcInfo(void){
++  int pid;
++  struct processInfo *pinfo;
++
++  if(argint(0,&pid) < 0 || argptr(1,(char**)&pinfo, sizeof(*pinfo)) < 0){
++    return -1;
++  }
++
++  return getProcInfo(pid,pinfo);
++}
+\ No newline at end of file
+diff --git a/usys.S b/usys.S
+index 8bfd8a1..c028197 100644
+--- a/usys.S
++++ b/usys.S
+@@ -29,3 +29,6 @@ SYSCALL(getpid)
+ SYSCALL(sbrk)
+ SYSCALL(sleep)
+ SYSCALL(uptime)
++SYSCALL(getNumProc)
++SYSCALL(getMaxPid)
++SYSCALL(getProcInfo)
+-- 
+2.43.0
+

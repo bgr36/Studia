@@ -1,0 +1,320 @@
+From 66ee48acdc38852031898b1e6f5464aa680fceaf Mon Sep 17 00:00:00 2001
+From: MyName <jankes040608@gmail.com>
+Date: Tue, 28 Jan 2025 18:36:13 +0100
+Subject: [PATCH] List7_Zad2
+
+---
+ Makefile   |  5 +++-
+ proc.c     | 87 ++++++++++++++++++++++++++++++++++++++++++++++++------
+ proc.h     |  2 ++
+ syscall.c  |  4 +++
+ syscall.h  |  2 ++
+ sysproc.c  |  2 +-
+ testPrio.c | 42 ++++++++++++++++++++++++++
+ user.h     |  2 ++
+ usys.S     |  2 ++
+ 9 files changed, 137 insertions(+), 11 deletions(-)
+ create mode 100644 testPrio.c
+
+diff --git a/Makefile b/Makefile
+index 09d790c..24d43b3 100644
+--- a/Makefile
++++ b/Makefile
+@@ -76,7 +76,7 @@ AS = $(TOOLPREFIX)gas
+ LD = $(TOOLPREFIX)ld
+ OBJCOPY = $(TOOLPREFIX)objcopy
+ OBJDUMP = $(TOOLPREFIX)objdump
+-CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
++CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -mno-sse -ggdb -m32 -fno-omit-frame-pointer
+ CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
+ ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
+ # FreeBSD ld wants ``elf_i386_fbsd''
+@@ -116,6 +116,7 @@ entryother: entryother.S
+ 
+ initcode: initcode.S
+ 	$(CC) $(CFLAGS) -nostdinc -I. -c initcode.S
++	$(OBJCOPY) --remove-section .note.gnu.property initcode.o
+ 	$(LD) $(LDFLAGS) -N -e start -Ttext 0 -o initcode.out initcode.o
+ 	$(OBJCOPY) -S -O binary initcode.out initcode
+ 	$(OBJDUMP) -S initcode.o > initcode.asm
+@@ -146,6 +147,7 @@ vectors.S: vectors.pl
+ ULIB = ulib.o usys.o printf.o umalloc.o
+ 
+ _%: %.o $(ULIB)
++	$(OBJCOPY) --remove-section .note.gnu.property ulib.o
+ 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $@ $^
+ 	$(OBJDUMP) -S $@ > $*.asm
+ 	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
+@@ -166,6 +168,7 @@ mkfs: mkfs.c fs.h
+ .PRECIOUS: %.o
+ 
+ UPROGS=\
++	_testPrio\
+ 	_cat\
+ 	_echo\
+ 	_forktest\
+diff --git a/proc.c b/proc.c
+index 806b1b1..d458dc6 100644
+--- a/proc.c
++++ b/proc.c
+@@ -112,6 +112,9 @@ found:
+   memset(p->context, 0, sizeof *p->context);
+   p->context->eip = (uint)forkret;
+ 
++  p->priority = 10;
++  p->waittime = 0;
++
+   return p;
+ }
+ 
+@@ -322,39 +325,87 @@ wait(void)
+ void
+ scheduler(void)
+ {
++  struct proc *p1;
+   struct proc *p;
+   struct cpu *c = mycpu();
+   c->proc = 0;
+   
+   for(;;){
+-    // Enable interrupts on this processor.
++    
+     sti();
+ 
+-    // Loop over process table looking for process to run.
+     acquire(&ptable.lock);
++    struct proc *highestPriorityProc = 0;
++
+     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+-      if(p->state != RUNNABLE)
++      if(p->state != RUNNABLE){
+         continue;
++      }
++        
++      highestPriorityProc = p;
++
++      for (p1=ptable.proc; p1 < &ptable.proc[NPROC]; p1++) {
++        if (p1->state != RUNNABLE) {
++          continue;
++        }
++
++        if (p1->priority > highestPriorityProc->priority) {
++          highestPriorityProc = p1;
++        }
++      }
++      p = highestPriorityProc;
+ 
+-      // Switch to chosen process.  It is the process's job
+-      // to release ptable.lock and then reacquire it
+-      // before jumping back to us.
+       c->proc = p;
+       switchuvm(p);
+       p->state = RUNNING;
+ 
+       swtch(&(c->scheduler), p->context);
+       switchkvm();
+-
+-      // Process is done running for now.
+-      // It should have changed its p->state before coming back.
+       c->proc = 0;
++
+     }
+     release(&ptable.lock);
+ 
+   }
+ }
+ 
++
++// void
++// scheduler(void)
++// {
++//   struct proc *p;
++//   struct cpu *c = mycpu();
++//   c->proc = 0;
++  
++//   for(;;){
++//     // Enable interrupts on this processor.
++//     sti();
++
++//     // Loop over process table looking for process to run.
++//     acquire(&ptable.lock);
++//     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
++//       if(p->state != RUNNABLE)
++//         continue;
++
++//       // Switch to chosen process.  It is the process's job
++//       // to release ptable.lock and then reacquire it
++//       // before jumping back to us.
++//       c->proc = p;
++//       switchuvm(p);
++//       p->state = RUNNING;
++
++//       swtch(&(c->scheduler), p->context);
++//       switchkvm();
++
++//       // Process is done running for now.
++//       // It should have changed its p->state before coming back.
++//       c->proc = 0;
++//     }
++//     release(&ptable.lock);
++
++//   }
++// }
++
+ // Enter scheduler.  Must hold only ptable.lock
+ // and have changed proc->state. Saves and restores
+ // intena because intena is a property of this
+@@ -531,4 +582,22 @@ procdump(void)
+     }
+     cprintf("\n");
+   }
++
++}
++
++int
++sys_setPrio(void){
++  int n;
++
++  if(argint(0,&n) < 0 || n <= 0 || n > 1000){
++    return -1;
++  }
++
++  myproc()->priority = n;
++  return 0;
++}
++
++int
++sys_getPrio(void){
++  return myproc()->priority;
+ }
+diff --git a/proc.h b/proc.h
+index 1647114..a5d8158 100644
+--- a/proc.h
++++ b/proc.h
+@@ -49,6 +49,8 @@ struct proc {
+   struct file *ofile[NOFILE];  // Open files
+   struct inode *cwd;           // Current directory
+   char name[16];               // Process name (debugging)
++  int priority;
++  int waittime;
+ };
+ 
+ // Process memory is laid out contiguously, low addresses first:
+diff --git a/syscall.c b/syscall.c
+index ee85261..fe6b129 100644
+--- a/syscall.c
++++ b/syscall.c
+@@ -103,6 +103,8 @@ extern int sys_unlink(void);
+ extern int sys_wait(void);
+ extern int sys_write(void);
+ extern int sys_uptime(void);
++extern int sys_setPrio(void);
++extern int sys_getPrio(void);
+ 
+ static int (*syscalls[])(void) = {
+ [SYS_fork]    sys_fork,
+@@ -126,6 +128,8 @@ static int (*syscalls[])(void) = {
+ [SYS_link]    sys_link,
+ [SYS_mkdir]   sys_mkdir,
+ [SYS_close]   sys_close,
++[SYS_setPrio] sys_setPrio,
++[SYS_getPrio] sys_getPrio,
+ };
+ 
+ void
+diff --git a/syscall.h b/syscall.h
+index bc5f356..7acac00 100644
+--- a/syscall.h
++++ b/syscall.h
+@@ -20,3 +20,5 @@
+ #define SYS_link   19
+ #define SYS_mkdir  20
+ #define SYS_close  21
++#define SYS_setPrio 22
++#define SYS_getPrio 23
+diff --git a/sysproc.c b/sysproc.c
+index 0686d29..192ebf2 100644
+--- a/sysproc.c
++++ b/sysproc.c
+@@ -88,4 +88,4 @@ sys_uptime(void)
+   xticks = ticks;
+   release(&tickslock);
+   return xticks;
+-}
++}
+\ No newline at end of file
+diff --git a/testPrio.c b/testPrio.c
+new file mode 100644
+index 0000000..88620a1
+--- /dev/null
++++ b/testPrio.c
+@@ -0,0 +1,42 @@
++#include "types.h"
++#include "stat.h"
++#include "user.h"
++
++void createProc(int priority)
++{
++    int pid = fork();
++    if (pid < 0)
++    {
++        printf(1, "Fork failed\n");
++        exit();
++    }
++    else if (pid == 0)
++    {
++        setPrio(priority);
++        for(int i = 0 ; i < 100;i++){
++            sleep(10);
++            printf(1,"proces o priorytecie: %d iteracja petli: %d \n",getPrio(),i);
++        }
++        printf(1, "proces o priorytecie = %d zakonczyl sie\n", getPrio());
++        exit();
++    }
++}
++
++int main(int argc, char *argv[])
++{
++    printf(1,"Start testu, oczekiwanie na procesy\n");
++    createProc(100);
++    createProc(300);
++    createProc(500);
++    createProc(150);
++    createProc(200);
++
++    
++
++    for (int i = 0; i < 8; i++)
++    {
++        wait();
++    }
++
++    exit();
++}
+\ No newline at end of file
+diff --git a/user.h b/user.h
+index 4f99c52..2598dd5 100644
+--- a/user.h
++++ b/user.h
+@@ -23,6 +23,8 @@ int getpid(void);
+ char* sbrk(int);
+ int sleep(int);
+ int uptime(void);
++int setPrio(int);
++int getPrio(void);
+ 
+ // ulib.c
+ int stat(const char*, struct stat*);
+diff --git a/usys.S b/usys.S
+index 8bfd8a1..12795fd 100644
+--- a/usys.S
++++ b/usys.S
+@@ -29,3 +29,5 @@ SYSCALL(getpid)
+ SYSCALL(sbrk)
+ SYSCALL(sleep)
+ SYSCALL(uptime)
++SYSCALL(setPrio)
++SYSCALL(getPrio)
+-- 
+2.43.0
+

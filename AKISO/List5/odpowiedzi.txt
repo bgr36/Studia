@@ -1,0 +1,13 @@
+2. Aby zobaczyć jak program wykonuje się krok po kroku możemy rozpocząć gdb komendą "gdb Zad2" tam wpisując
+komende. x/9d &matrix, widzimy że zapisuje ją jako ciąg znaków z określonym poczatkiem. 
+Matryce kod obsługuje tak: address =B ASE + (i⋅N+j) ⋅ size_of_element
+
+    BASE: Adres początkowy macierzy w pamięci.
+    NN: Liczba kolumn macierzy (rozmiar wiersza).
+    i: Numer wiersza (liczony od 0).
+    j: Numer kolumny (liczony od 0).
+    size_of_element: Rozmiar pojedynczego elementu w bajtach.
+
+3. Aby zobaczyć jak program wykonuje się krok po kroku możemy rozpocząć gdb komendą "gdb Zad3" następnie 
+ustawić break point na _start i potem komendami "si" oraz "info registers" możemy krok po kroku obserwować 
+zmiany na rejestrach
