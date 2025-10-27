@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="695.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FiguryPaintController">
+   <children>
+      <Pane fx:id="PaintPane" layoutX="10.0" layoutY="101.0" prefHeight="580.0" prefWidth="580.0">
+         <children>
+            <Rectangle fx:id="Border" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="580.0" stroke="BLACK" strokeType="INSIDE" width="580.0" />
+            <Line fx:id="PreviewLine" endX="0" layoutX="0" layoutY="0" startX="0" stroke="#999999" strokeWidth="3.0" />
+            <Circle fx:id="PreviewCircle" fill="#f4f4f4" layoutX="0" layoutY="0" radius="0" stroke="#999999" strokeType="INSIDE" strokeWidth="3.0" visible="false" />
+            <Polygon fx:id="PreviewTriangle" fill="#f4f4f4" layoutX="0" layoutY="0" stroke="#999999" strokeType="INSIDE" strokeWidth="3.0" visible="false">
+              <points>
+                <Double fx:value="0.0" />
+                <Double fx:value="0.0" />
+                <Double fx:value="0.0" />
+                <Double fx:value="0.0" />
+                <Double fx:value="0.0" />
+                <Double fx:value="0.0" />
+              </points>
+            </Polygon>
+            <Rectangle fx:id="PreviewRectangle" arcHeight="5.0" arcWidth="5.0" fill="#f4f4f4" height="0" layoutX="0" layoutY="0" stroke="#999999" strokeType="INSIDE" strokeWidth="3.0" visible="false" width="0" />
+         </children></Pane>
+      <Button layoutX="231.0" layoutY="14.0" mnemonicParsing="false" onAction="#InfoButonClicked" prefHeight="25.0" prefWidth="67.0" text="Info" />
+      <Label fx:id="OutputLabel" layoutX="14.0" layoutY="40.0" prefHeight="17.0" prefWidth="211.0" text="-------------------------------------------" />
+      <Button fx:id="RectButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#RectButtonClicked" prefHeight="25.0" prefWidth="25.0" text="□" />
+      <Button fx:id="TriButton" layoutX="39.0" layoutY="14.0" mnemonicParsing="false" onAction="#TriButtonClicked" prefHeight="25.0" prefWidth="25.0" text="▷" />
+      <Button fx:id="CircButton" layoutX="64.0" layoutY="14.0" mnemonicParsing="false" onAction="#CircButtonClicked" prefHeight="25.0" prefWidth="25.0" text="○">
+         <font>
+            <Font size="11.0" />
+         </font>
+      </Button>
+      <Button fx:id="MoveButton" layoutX="89.0" layoutY="14.0" mnemonicParsing="false" onAction="#MoveButtonClicked" prefHeight="25.0" prefWidth="25.0" text="M">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
+      <Group fx:id="RotateGroup" layoutX="21.0" layoutY="65.0" visible="false">
+         <children>
+            <Slider fx:id="RotateSlider" layoutX="-4.0" layoutY="14.0" max="1" min="0" prefHeight="14.0" prefWidth="200.0" />
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="-5.0" layoutY="-6.0" prefHeight="17.0" prefWidth="200.0" text="Urzyj do obrotu zaznaczonej figury " textAlignment="CENTER" />
+         </children>
+      </Group>
+      <Button fx:id="SaveButton" layoutX="114.0" layoutY="14.0" mnemonicParsing="false" onAction="#SaveButtonClicked" text="Zapisz" />
+      <Button fx:id="LoadButton" layoutX="163.0" layoutY="14.0" mnemonicParsing="false" onAction="#LoadButtonClicked" text="Wczytaj" />
+      <Group fx:id="ColorGroup" layoutX="231.0" layoutY="56.0" visible="false">
+         <children>
+            <Label prefHeight="17.0" prefWidth="125.0" text="Wybierz kolor" />
+            <ColorPicker fx:id="ColorPicker" layoutY="19.0" />
+         </children>
+      </Group>
+      <Label fx:id="SaveLoadLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="307.0" layoutY="18.0" prefHeight="17.0" prefWidth="150.0" text="------------------------------" />
+   </children>
+</Pane>

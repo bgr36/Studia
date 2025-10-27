@@ -1,0 +1,91 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+# Funkcja do wczytywania plików CSV
+def load_csv(filename):
+    df = pd.read_csv(filename)
+    n_values = [int(col) for col in df.columns[1:-1]]  # Pobieramy wartości n (kolumny)
+    results = df.iloc[:-1, 1:-1].values                # Pobieramy wyniki testów
+    averages = df.iloc[-1, 1:-1].values.astype(float)  # Pobieramy średnie
+    return n_values, results, averages
+
+# Funkcja do tworzenia wykresów podstawowych
+def plot_results(n_values, results, averages, variable_name):
+    plt.figure(figsize=(12, 6))
+    
+    # Rysujemy wyniki poszczególnych testów jako punkty (scatter plot)
+    for result in results:
+        plt.scatter(n_values, result, alpha=0.5, color='blue')  # Zmiana na scatter
+
+    # Rysujemy średnią jako punkt
+    plt.scatter(n_values, averages, color='red', label='Średnia', zorder=5, linewidth=2)
+
+    # Ustawienia wykresu
+    plt.xlabel("n")
+    plt.ylabel(variable_name)
+    plt.title(f"{variable_name} vs n (punkty)")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(f"{variable_name}_vs_n_scatter.png")
+    plt.show()
+
+
+# Funkcja do tworzenia wykresów ilorazów
+def plot_ratios(n_values, averages, variable_name):
+    n = np.array(n_values)
+    avg = np.array(averages)
+    
+    plt.figure(figsize=(12, 8))
+    
+    if variable_name == "Bn":
+        plt.plot(n, avg / n, label=f"{variable_name}(n)/n", color="blue")
+        plt.plot(n, avg / np.sqrt(n), label=f"{variable_name}(n)/sqrt(n)", color="green")
+    elif variable_name == "Un":
+        plt.plot(n, avg / n, label=f"{variable_name}(n)/n", color="blue")
+    elif variable_name == "Cn":
+        plt.plot(n, avg / n, label=f"{variable_name}(n)/n", color="blue")
+        plt.plot(n, avg / (n * np.log(n)), label=f"{variable_name}(n)/n ln(n)", color="green")
+        plt.plot(n, avg / (n**2), label=f"{variable_name}(n)/n^2", color="purple")
+    elif variable_name == "Dn":
+        plt.plot(n, avg / n, label=f"{variable_name}(n)/n", color="blue")
+        plt.plot(n, avg / (n * np.log(n)), label=f"{variable_name}(n)/n ln(n)", color="green")
+        plt.plot(n, avg / (n**2), label=f"{variable_name}(n)/n^2", color="purple")
+    elif variable_name == "DnMinusCn":
+        plt.plot(n, avg / n, label=f"{variable_name}(n)/n", color="blue")
+        plt.plot(n, avg / (n * np.log(n)), label=f"{variable_name}(n)/n ln(n)", color="green")
+        plt.plot(n, avg / (n * np.log(np.log(n))), label=f"{variable_name}(n)/n ln ln(n)", color="purple")
+    
+    # Ustawienia wykresu
+    plt.xlabel("n")
+    plt.ylabel(f"Ilorazy {variable_name}")
+    plt.title(f"Ilorazy {variable_name} jako funkcja n")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(f"Ratios_{variable_name}.png")
+    plt.show()
+
+# Główna funkcja obsługująca wszystkie pliki
+def main():
+    os.chdir("C:/Users/janke/Desktop/MPiS2")
+    print(f"Nowy katalog roboczy: {os.getcwd()}")
+    folder = "."  # Folder z plikami CSV
+    variables = ["Bn", "Un", "Cn", "Dn", "DnMinusCn"]
+    
+    for var in variables:
+        filename = os.path.join(folder, f"{var}_results.csv")
+        if os.path.exists(filename):
+            print(f"Przetwarzam plik: {filename}")
+            n_values, results, averages = load_csv(filename)
+            
+            # Podstawowe wykresy wyników
+            plot_results(n_values, results, averages, var)
+            
+            # Wykresy ilorazów
+            plot_ratios(n_values, averages, var)
+        else:
+            print(f"Plik {filename} nie istnieje!")
+
+if __name__ == "__main__":
+    main()

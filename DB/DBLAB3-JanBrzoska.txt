@@ -1,0 +1,312 @@
+Zad1
+
+Tworzę baze danych kwerendą:
+CREATE DATABASE pracownicydb;
+
+Tworzę poszczególne tabele następnymi kwerendami:
+CREATE TABLE Ludzie (
+    id INT AUTO_INCREMENT PRIMARY KEY,    
+    PESEL CHAR(11) UNIQUE,       
+    imie VARCHAR(30) NOT NULL,
+    nazwisko VARCHAR(30) NOT NULL,
+    data_urodzenia DATE NOT NULL,
+    plec ENUM('K', 'M') NOT NULL,
+    CHECK (LENGTH(PESEL) = 11)            
+);
+
+CREATE TABLE Zawody (
+    zawod_id INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa VARCHAR(50) NOT NULL,
+    pensja_min FLOAT NOT NULL CHECK (pensja_min >= 0), 
+    pensja_max FLOAT NOT NULL CHECK (pensja_max > pensja_min) 
+);
+
+CREATE TABLE Pracownicy (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    PESEL CHAR(11) NOT NULL,
+    zawod_id INT NOT NULL,
+    pensja FLOAT NOT NULL CHECK (pensja >= 0),
+    FOREIGN KEY (PESEL) REFERENCES Ludzie(PESEL),
+    FOREIGN KEY (zawod_id) REFERENCES Zawody(zawod_id)
+);
+
+Tworzę trigger który przy dodaniu nowego rekordu do tabeli ludzie wygeneruje mu poprawny PESEL
+DELIMITER $$
+
+CREATE TRIGGER GenerujPESELTrigger
+BEFORE INSERT ON Ludzie
+FOR EACH ROW
+BEGIN
+DECLARE rok, miesiac, dzien, liczba_porzadkowa, cyfra_kontrolna INT;
+    DECLARE pesel_nowy CHAR(11);
+
+    SET rok = YEAR(NEW.data_urodzenia);
+    SET miesiac = MONTH(NEW.data_urodzenia);
+    SET dzien = DAY(NEW.data_urodzenia);
+
+    IF rok >= 2000 THEN
+        SET miesiac = miesiac + 20;
+    END IF;
+
+	 -- liczba porządkowa
+    SET liczba_porzadkowa = FLOOR(1000 + RAND() * 9000);
+    IF NEW.plec = 'K' THEN
+        SET liczba_porzadkowa = liczba_porzadkowa - MOD(liczba_porzadkowa, 2);
+    ELSE
+        SET liczba_porzadkowa = liczba_porzadkowa - MOD(liczba_porzadkowa, 2) + 1;
+    END IF;
+
+    -- cyfry od roku urodzenia
+    SET pesel_nowy = CONCAT(
+        LPAD(rok % 100, 2, '0'),
+        LPAD(miesiac, 2, '0'),
+        LPAD(dzien, 2, '0'),
+        LPAD(liczba_porzadkowa, 4, '0')
+    );
+
+    -- cyfra kontrolna
+    SET cyfra_kontrolna = (
+        (SUBSTRING(pesel_nowy, 1, 1) * 1 +
+         SUBSTRING(pesel_nowy, 2, 1) * 3 +
+         SUBSTRING(pesel_nowy, 3, 1) * 7 +
+         SUBSTRING(pesel_nowy, 4, 1) * 9 +
+         SUBSTRING(pesel_nowy, 5, 1) * 1 +
+         SUBSTRING(pesel_nowy, 6, 1) * 3 +
+         SUBSTRING(pesel_nowy, 7, 1) * 7 +
+         SUBSTRING(pesel_nowy, 8, 1) * 9 +
+         SUBSTRING(pesel_nowy, 9, 1) * 1 +
+         SUBSTRING(pesel_nowy, 10, 1) * 3
+        ) MOD 10
+    );
+    SET cyfra_kontrolna = (10 - cyfra_kontrolna) MOD 10;
+	 SET pesel_nowy = CONCAT(pesel_nowy, cyfra_kontrolna);
+
+    -- zapewnienie unikalności
+    WHILE EXISTS (SELECT 1 FROM Ludzie WHERE PESEL = pesel_nowy) DO
+        SET liczba_porzadkowa = (liczba_porzadkowa + 2) MOD 10;
+        SET pesel_nowy = CONCAT(
+            LPAD(rok % 100, 2, '0'),
+            LPAD(miesiac, 2, '0'),
+            LPAD(dzien, 2, '0'),
+            LPAD(liczba_porzadkowa, 4, '0'),
+            cyfra_kontrolna
+        );
+    END WHILE;
+
+    
+    SET NEW.PESEL = pesel_nowy;
+END$$
+
+DELIMITER ;
+
+Teraz mogę dodać rekordy do tabeli ludzi z odpowiednimi datami urodzeń,
+następnie tworzę procedure która przydieli zawody poszczególnym ludziom
+
+DELIMITER $$
+
+CREATE PROCEDURE PrzypiszZawody()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE osoba_pesel CHAR(11);
+    DECLARE osoba_data_urodzenia DATE;
+    DECLARE osoba_plec ENUM('K', 'M');
+    DECLARE new_zawod_id INT;
+    DECLARE lekarz_id INT;
+    DECLARE pensja FLOAT;
+
+    DECLARE kursor CURSOR FOR
+      SELECT PESEL, data_urodzenia, plec
+      FROM ludzie
+      WHERE TIMESTAMPDIFF(YEAR, data_urodzenia, CURDATE()) >= 18;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+      
+    -- id dla lekarz
+    SELECT zawod_id
+    INTO lekarz_id
+    FROM zawody
+    WHERE nazwa = 'lekarz';
+    
+    OPEN kursor;
+
+    petla: LOOP
+    
+        FETCH kursor INTO osoba_pesel, osoba_data_urodzenia, osoba_plec;
+        IF done = 1 THEN
+            LEAVE petla;
+        END IF;
+
+        SELECT zawod_id
+        INTO new_zawod_id
+        FROM zawody
+        ORDER BY RAND()
+        LIMIT 1;
+
+        -- warunki
+        IF new_zawod_id = lekarz_id THEN
+            IF (osoba_plec = 'M' AND TIMESTAMPDIFF(YEAR, osoba_data_urodzenia, CURDATE()) > 65)
+            OR (osoba_plec = 'K' AND TIMESTAMPDIFF(YEAR, osoba_data_urodzenia, CURDATE()) > 60) THEN
+                -- ponowny losowy wybór zawodu, unikając lekarza
+                SELECT zawod_id
+                INTO new_zawod_id
+                FROM zawody
+                WHERE zawod_id != lekarz_id
+                ORDER BY RAND()
+                LIMIT 1;
+            END IF;
+        END IF;
+
+        -- pensja
+        SELECT FLOOR(pensja_min + RAND() * (pensja_max - pensja_min + 1))
+        INTO pensja
+        FROM zawody
+        WHERE new_zawod_id = zawod_id;
+
+        INSERT INTO pracownicy (PESEL, zawod_id, pensja)
+        VALUES (osoba_pesel, new_zawod_id, pensja);
+
+    END LOOP;
+
+    CLOSE kursor;
+END$$
+
+DELIMITER ;
+
+Zad2
+
+Tworzę indeksy poleceniami:
+CREATE INDEX idx_plec_imie ON ludzie (plec, imie);
+CREATE INDEX idx_pensja ON pracownicy (pensja);
+
+Wyciągniecie danych poszczególnymi kwerendami
+
+SELECT * 
+FROM ludzie 
+WHERE plec = 'K' AND imie LIKE 'A%';
+
+SELECT * 
+FROM ludzie 
+WHERE plec = 'K';
+
+SELECT * 
+FROM ludzie 
+WHERE imie LIKE 'K%';
+
+SELECT * 
+FROM pracownicy 
+WHERE pensja < 2000;
+
+SELECT * 
+FROM pracownicy p
+JOIN zawody z ON p.zawod_id = z.zawod_id
+JOIN ludzie l ON p.PESEL = l.PESEL
+WHERE l.plec = 'M' AND z.nazwa = 'informatyk' AND p.pensja > 10000;
+
+Indeksy w naszych tabelach możemy sprawdzić poleceniem SHOW INDEX FROM <nazwa_tabeli>;
+
+Teraz sprawdzamy czy kompilator użył dodanych indeksów, by to zrobić przed każdym wywołaniem dodajemy EXPLAIN,
+Widzimy że użył indeksów dla zapytania 1,2,4 i 5
+
+Zad3
+Towrzę procedure używajacą TRANSACTION
+
+DELIMITER $$
+
+CREATE PROCEDURE PodwyzkaZawod(IN zawod_nazwa VARCHAR(50))
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE p_pensja_min FLOAT;
+    DECLARE p_pensja_max FLOAT;
+    DECLARE p_pensja FLOAT;
+    DECLARE p_zawod_id INT;
+    DECLARE p_pesel CHAR(11);
+    
+    DECLARE kursor CURSOR FOR
+        SELECT PESEL, pensja
+        FROM pracownicy
+        WHERE zawod_id = p_zawod_id;
+	 DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    
+    -- wybór zawodu
+    SELECT zawod_id, pensja_min, pensja_max
+    INTO p_zawod_id, p_pensja_min, p_pensja_max
+    FROM zawody
+    WHERE nazwa = zawod_nazwa;
+
+    -- jeśli nie znajdziemy kończymy procedure
+    IF p_zawod_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Zawod o podanej nazwie nie istnieje';
+    END IF;
+
+	 START TRANSACTION;
+
+    OPEN kursor;
+
+    petla: LOOP
+        FETCH kursor INTO p_pesel, p_pensja;
+        
+        IF done = 1 THEN
+            LEAVE petla;
+        END IF;
+
+        SET p_pensja = p_pensja * 1.05;
+
+        -- sprawdzamy czy pensja nie przekracza max dla zawodu, jesli tak kończymy tranzakcje i procedure
+        IF p_pensja > p_pensja_max THEN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Podwyzka przekroczyla gorna granice pensji';
+        END IF;
+
+        UPDATE pracownicy
+        SET pensja = p_pensja
+        WHERE PESEL = p_pesel;
+    END LOOP;
+
+    COMMIT;
+
+    CLOSE kursor;
+END
+
+DELIMITER ;
+
+Zad4
+Towrzę procedure używającą PREPARE 
+
+DELIMITER $$
+
+CREATE PROCEDURE LiczbaKobietWZawodzie (IN zawod_nazwa VARCHAR(50))
+BEGIN
+    SET @sql_query = CONCAT(
+        'SELECT COUNT(*) 
+         FROM pracownicy p
+         JOIN zawody z ON p.zawod_id = z.zawod_id
+         JOIN ludzie l ON p.PESEL = l.PESEL
+         WHERE l.plec = "K" AND z.nazwa = ?'
+    );
+
+    PREPARE stmt FROM @sql_query;
+    EXECUTE stmt USING zawod_nazwa;
+    DEALLOCATE PREPARE stmt;
+END$$
+
+DELIMITER ;
+Zad5
+
+Tworzę backup
+mysqldump -u [nazwa_użytkownika] -p [nazwa_bazy_danych] > [ścieżka]
+Wczytanie zapisu
+mysql -u [nazwa_użytkownika] -p [nazwa_bazy_danych] < [ścieżka]
+
+Backup pełny to kopia całej bazy danych, różnicowy to kopia zmian od ostatniego backup.
+
+Zad6 
+	- introduction
+	Zad2 - SELECT first_name, last_name, department FROM employees WHERE first_name LIKE 'Bob';
+	Zad3 - UPDATE employees SET department = 'Sales' WHERE first_name LIKE 'Tobi' AND last_name LIKE 'Barnett'
+	Zad4 - ALTER TABLE employees ADD COLUMN phone varchar(20);
+	Zad5 - GRANT ALL ON grant_rights TO unauthorized_user;
+	Zad9 - Smith' | or | '1' = '1
+	Zad10 - Login_count = cokolwiek | User_Id = 0 OR 1 = 1
+	Zad11 - Employee Name = cokolwiek | Authentication TAN = ' OR '1'='1
+	Zad12 - Employee Name = cokolwiek | Authentication TAN = '; UPDATE employees SET salary = 999999 WHERE last_name = 'Smith
+	Zad13 - %'; DROP TABLE access_log; -- 
+	

@@ -1,0 +1,318 @@
+
+Email: "279765@student.pwr.edu.pl"
+Hasło: "vY8X&BeCr4X?qe."
+Zad2:
+
+Tworze nową baze poleceniem:
+use library
+
+I dodaje poszczególne dokumenty w kolekcjach,
+które tworzą się automatycznie przy dodaniu nowego elementu
+
+db.authors.insertMany([
+    {
+        "name": { "first": "J.R.R", "last": "Tolkien" },
+        "country": "UK",
+        "birth": new Date('1892-01-03'),
+        "death": new Date('1973-09-02'),
+    },
+    {
+        "name": { "first": "Henryk", "last": "Sienkiewicz" },
+        "country": "Poland",
+        "birth": new Date('1846-05-05'),
+        "death": new Date('1916-11-15'),
+    },
+    {
+        "name": { "first": "Olga", "last": "Tokarczuk" },
+        "country": "Poland",
+        "birth": new Date('1962-01-29'),
+        "death": null,
+    },
+    {
+        "name": { "first": "George", "last": "Orwell" },
+        "country": "UK",
+        "birth": new Date('1903-06-25'),
+        "death": new Date('1950-01-21'),
+    }
+])
+
+
+db.books.insertMany([
+  {
+    "title": "The Hobbit",
+    "isbn": "978-0-261-10295-6",
+    "publication_year": 1937,
+    "language": "English",
+    "author": ObjectId("65711ccdcb2d05e2c973fe85"),
+    "publisher": {
+      "name": "George Allen & Unwin",
+      "country": "UK"
+    },
+  },
+  {
+    "title": "Quo Vadis",
+    "isbn": "978-83-08-05215-1",
+    "publication_year": 1896,
+    "language": "Polish",
+    "author": ObjectId("65711ccdcb2d05e2c973fe86"),
+    "publisher": {
+      "name": "Gebethner i Wolff",
+      "country": "Poland"
+    },
+  },
+  {
+    "title": "Prowadź swój pług przez kości umarłych",
+    "isbn": "978-83-08-05924-2",
+    "publication_year": 2009,
+    "language": "Polish",
+    "author": ObjectId("65711ccdcb2d05e2c973fe87"),
+    "publisher": {
+      "name": "Wydawnictwo Literackie",
+      "country": "Poland"
+    },
+  }
+  {
+    "title": "Ciekawa Ksiażka",
+    "isbn": "978-0-261-10295-8",
+    "publication_year": 1990,
+    "language": "Polish",
+    "author": ObjectId("65711ccdcb2d05e2c973fe87"),
+    "publisher": {
+      "name": "George Allen & Unwin",
+      "country": "UK"
+    },
+    "genres": ["Fantasy"]
+  },
+  {
+    "title": "Nudna Ksiażka",
+    "isbn": "978-83-08-05215-4",
+    "publication_year": 1869,
+    "language": "Polish",
+    "author": ObjectId("65711ccdcb2d05e2c973fe87"),
+    "publisher": {
+      "name": "Gebethner i Wolff",
+      "country": "Poland"
+    },
+    "genres": ["Fiction"]
+  },
+  {
+    "title": "The Winds of Winter",
+    "isbn": "978-0-261-10456-1",
+    "publication_year": 2024,
+    "language": "English",
+    "author": ObjectId("65711ccdcb2d05e2c973fe88"),
+    "publisher": {
+      "name": "Bantam Books",
+      "country": "USA"
+    }
+  },
+  {
+    "title": "A Game of Thrones",
+    "isbn": "978-0-553-10354-0",
+    "publication_year": 1996,
+    "language": "English",
+    "author": ObjectId("65711ccdcb2d05e2c973fe88"),
+    "publisher": {
+      "name": "Bantam Books",
+      "country": "USA"
+    }
+  },
+  {
+    "title": "1984",
+    "isbn": "978-0-452-28423-4",
+    "publication_year": 1949,
+    "language": "English",
+    "author": ObjectId("65711ccdcb2d05e2c973fe86"),
+    "publisher": {
+      "name": "Secker & Warburg",
+      "country": "UK"
+    }
+  },
+  {
+    "title": "Animal Farm",
+    "isbn": "978-0-452-28424-1",
+    "publication_year": 1945,
+    "language": "English",
+    "author": ObjectId("65711ccdcb2d05e2c973fe86"),
+    "publisher": {
+      "name": "Secker & Warburg",
+      "country": "UK"
+    }
+  },
+  {
+    "title": "The Hobbit",
+    "isbn": "978-0-261-10295-6",
+    "publication_year": 1937,
+    "language": "English",
+    "author": ObjectId("65711ccdcb2d05e2c973fe85"),
+    "publisher": {
+      "name": "George Allen & Unwin",
+      "country": "UK"
+    }
+  },
+  {
+    "title": "The Lord of the Rings",
+    "isbn": "978-0-261-10238-3",
+    "publication_year": 1954,
+    "language": "English",
+    "author": ObjectId("65711ccdcb2d05e2c973fe85"),
+    "publisher": {
+      "name": "George Allen & Unwin",
+      "country": "UK"
+    }
+  }
+
+  },
+]);
+
+
+
+db.reviews.insertMany([
+    {
+        "book": ObjectId("65712008cb2d05e2c973fe87"),
+        "reviewer": { "name": "Jane Smith", "email": "jane.smith@example.com" },
+        "rating": 1,
+        "text": "Not good at all"
+    },
+    {
+        "book": ObjectId("65712008cb2d05e2c973fe88"),
+        "reviewer": { "name": "Alice Johnson", "email": "alice.j@example.com" },
+        "rating": 4,
+        "text": "Horrible"
+    }
+    {
+        "book": ObjectId("65712008cb2d05e2c973fe86"),
+        "reviewer": { "name": "John Doe", "email": "john.doe@example.com" },
+        "rating": 5,
+        "text": "Absolutely amazing book!"
+    },
+    {
+        "book": ObjectId("65712008cb2d05e2c973fe86"),
+        "reviewer": { "name": "Jane Smith", "email": "jane.smith@example.com" },
+        "rating": 3,
+        "text": "Good, but not my favorite."
+    },
+    {
+        "book": ObjectId("65712008cb2d05e2c973fe86"),
+        "reviewer": { "name": "Alice Johnson", "email": "alice.j@example.com" },
+        "rating": 2,
+        "text": "Not my cup of tea."
+    }
+])
+
+
+Skutkiem takiej struktury przechowywania ocen jest to że dane o recenzencie 
+są przechowywane w każdej rezencji osobno a wiec w sytuacji gdy jeden 
+rezencent wystawi kilka recenzji to baza przechowuje te same dane kilka razy,
+za to wstawioannie nowych recenzji jest prostsze gdyż nie musimy koordynować danych
+z jakąś kolekcją danych recenzentów
+
+
+Dodanie nowych pól do istniejących kolekcji:
+
+db.authors.updateMany(
+  {}, 
+  { 
+    $set: { 
+      awards: [] 
+    } 
+  }
+);
+
+db.books.updateMany(
+  {}, 
+  { 
+    $set: { 
+      genres: [] 
+    } 
+  }
+);
+
+
+Gdy wstawimy dane do kolekcji które nie pasują do naszego "schematu" to nic się nie stanie
+gdyż mongodb nie wymusza sztywno struktóry danych, tak samo ze wspiasniem wartości null. 
+Można wywołąć walidacje poleceniem db.collection.validate() lub ustawić validator 
+
+
+Zad3:
+
+Wyszukanie książek napisanych przez danego autora np "J.R.R Tolkien"
+
+const authorId = db.authors.findOne({ 
+  "name.first": "J.R.R", 
+  "name.last": "Tolkien" 
+})._id;
+
+db.books.find({ author: authorId }).pretty();
+
+Wszyskie książki Fantasy po polsku
+
+db.books.find({
+  language: "Polish",
+  genres: "Fantasy" 
+}).pretty();
+
+Wszystkie książki z średnią ocen wiekszą niż 4
+
+db.reviews.aggregate([
+  {
+    $group: {
+      _id: "$book", 
+      averageRating: { $avg: "$rating" } 
+    }
+  },
+  {
+    $match: { 
+      averageRating: { $gte: 4 } 
+    }
+  }
+]);
+
+Ksiązki polskich autorów
+
+db.books.aggregate([
+  
+  {
+    $lookup: {
+      from: "authors", 
+      localField: "author",
+      foreignField: "_id", 
+      as: "authorDetails" 
+    }
+  },
+  
+  {
+    $unwind: "$authorDetails"
+  },
+  
+  {
+    $match: { 
+      "authorDetails.country": "Poland" 
+    }
+  },
+  
+  {
+    $lookup: {
+      from: "reviews", 
+      localField: "_id", 
+      foreignField: "book", 
+      as: "bookReviews"
+    }
+  },
+  
+  {
+    $addFields: {
+      averageRating: {
+        $avg: "$bookReviews.rating" 
+      }
+    }
+  },
+  
+  {
+    $project: {
+      title: 1,
+      "authorDetails.name.last": 1,
+      averageRating: 1
+    }
+  }
+]);

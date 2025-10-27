@@ -1,0 +1,19 @@
+# RESTful API Projekt
+
+## Uruchomienie
+```bash
+npm install
+touch .env # uzupełnij
+npm run dev
+```
+
+## Endpoints
+- POST `/users/register`
+- POST `/users/login`
+- GET `/users/me` (auth)
+- CRUD `/products` (auth + role)
+- CRUD `/reviews` (auth)
+
+## Testy
+```
+npm test

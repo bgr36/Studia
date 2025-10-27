@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="BinaryTreeClientFX1">
+   <children>
+      <ScrollPane fx:id="scrollPane" layoutX="5.0" layoutY="40.0" prefHeight="355.0" prefWidth="440.0" />
+      <TextArea fx:id="displayArea" layoutX="450.0" layoutY="5.0" prefHeight="390.0" prefWidth="145.0" />
+      <HBox layoutX="5.0" layoutY="5.0" prefHeight="30.0" prefWidth="440.0" spacing="5.0">
+         <children>
+            <ComboBox fx:id="typeComboBox" prefHeight="26.0" prefWidth="82.0" promptText="Integer">
+                <items>
+                 <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="Integer" />
+                     <String fx:value="Double" />
+                     <String fx:value="String" />
+                 </FXCollections>
+                </items>
+             </ComboBox>
+            <TextField fx:id="inputField" prefHeight="26.0" prefWidth="50.0" />
+            <Button mnemonicParsing="false" onAction="#setType" text="Set Type" />
+            <Button mnemonicParsing="false" onAction="#insert" text="Insert" />
+            <Button mnemonicParsing="false" onAction="#delete" text="Delete" />
+            <Button mnemonicParsing="false" onAction="#search" text="Search" />
+            <Button mnemonicParsing="false" onAction="#draw" text="Draw" />
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

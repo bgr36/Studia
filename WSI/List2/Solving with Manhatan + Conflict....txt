@@ -1,0 +1,43 @@
+Solving with Manhatan + Conflict...
+Moves: L U L U L D D R U U R D D L U R U L L D R U R U L L D R R R U L D D R D L U R U U L L D R D D R
+Steps: 48, Visited: 209717, Time: 8.0786s
+
+Solving with Manhatan + Conflict...
+Moves: L L U R R U U L L D L U R D R D D L U L U R R D L L U R R U L L D D D R R U U R D D L L U R U R D D
+Steps: 50, Visited: 253483, Time: 9.3187s
+
+Solving with Manhatan + Conflict...
+Moves: U L D R U U L L U R D L U L D D R U R D D L U U U R D L L D R R R D L U U R D L U R U L L L D D D R R R
+Steps: 52, Visited: 1068344, Time: 47.3991s
+
+Solving with Manhatan + Conflict...
+Moves: U L U L D D R R U L U L D L D R U L U U R D R U L D R R U L D R D L D L U L U R R R D D L L U L U R R D R D
+Steps: 54, Visited: 912617, Time: 34.3043s
+
+Solving with Manhatan + Conflict...
+Moves: L L U R R U U L D D D R U L L U U L D R R R D L U U R D L U L D D D R U L L D R U L U U R D D R U U L D D R R D
+Steps: 56, Visited: 4443186, Time: 179.0848s
+
+Solving with Manhatan + Conflict...
+Moves: U L U R U L L L D R D L U R U R D D D R U U L D L U U R D R D L L D R R U L L U U L D D D R R U L D R R
+Steps: 52, Visited: 5065456, Time: 222.3357s
+
+Solving with Manhatan + Conflict...
+Moves: L U L D L U R R U R D D L L U U R U R D L U L D L U R D D R U U L D L D R U R D D L U U R D R U L D D L U U R D R D
+Steps: 58, Visited: 834969, Time: 40.6723s
+
+Solving with Manhatan + Conflict...
+Moves: U L U L D R R U L L L U R R R D L D D L U L U R U R D D D R U L L D L U U U R D D D R U U R D D
+Steps: 48, Visited: 295864, Time: 16.9102s
+
+Solving with Manhatan + Conflict...
+Moves: L L L U R R R U L L U L D D R D R R U L L U U R R D L D D L U R R U L L L D D R U R U L U R R D D D
+Steps: 50, Visited: 464571, Time: 20.8154s
+
+Solving with Manhatan + Conflict...
+Moves: U L L U U R D D D L U U R D R D L L U L U R R R U L L L D R R R D L L L U R U R D D R D
+Steps: 44, Visited: 48180, Time: 1.5733s
+
+Solving with Manhatan + Conflict...
+Moves: U L L L D R U U U R D R U L D L L U R R D D R U U L D D D L U U R D D R U L L L U R R R D L D L U L U R R D D R
+Steps: 56, Visited: 527743, Time: 20.6075s

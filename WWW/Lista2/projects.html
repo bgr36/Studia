@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projekty</title>
+    <link rel="stylesheet" href="style.min.css">
+</head>
+<body>
+    <header>
+        <h1>Moje Projekty</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">O mnie</a></li>
+                <li><a href="projects.html">Projekty</a></li>
+                <li><a href="interests.html">Zainteresowania</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <section id="projekty">
+            <h2>Lista Projektów</h2>
+
+            <article class="code-container">
+                <h3 class="project-title">Funkcja rozwiązująca "Mindstrom"</h3>
+                <div class="code-content">
+                    <div class="code-description">
+                        <p>Ten kod to prosta funkcja która zgaduje nasz wymyślony kod w grze "Mindstorm" w mniej niż 5 ruchów na pierwszy rzut oka problem wydawał się strasznie skomplikowany, trudno
+                            w końcu nawet człowiek nie jest w stanie czsami tego zrobić, jednak po dłuższym czasie namysłu rozwiązanie było dość proste, a mianowicie, komputer na podstawie otrzmanej 
+                            odpowiedzi na swoje pierwsze zapytanie eliminuje ze zbioru wszystkich możliwych odpowiedzi te kótrych na pewno nie może już zbudować, po kilku krokach pętli pozostanie nam 
+                            tylko jedna kombinacja kolorów - ta szukana właśnie.
+                        </p>
+                    </div>
+                    <div class="code-block">
+                        <pre><code>
+int possible = 1296;
+int guess(void)
+{
+    int set_of_combinations[1296][4];
+    generateCombinations(set_of_combinations);
+
+    while (possible > 0)
+    {
+        printf("Mam jeszcze %d możliwych ustawień.\n", possible);
+
+        int code_guess[4];
+        for (int i = 0; i &lt; 4; i++)
+        {
+            code_guess[i] = set_of_combinations[0][i];
+        }
+
+        Result result = check_code(code_guess);
+
+        if (result.red == 4)
+        {
+            printf("Zgadłem !\n");
+            return 0;
+        }
+
+        int new_possible = 0;
+
+        for (int i = 0; i &lt; possible; i++)
+        {
+            if (check(code_guess, set_of_combinations[i]).red == result.red && check(code_guess, set_of_combinations[i]).white == result.white)
+            {
+                for (int j = 0; j &lt; 4; j++)
+                {
+                    set_of_combinations[new_possible][j] = set_of_combinations[i][j];
+                }
+                new_possible++;
+            }
+        }
+
+        possible = new_possible;
+    }
+    printf("Czyżbyś oszukiwał ?\n");
+    return 0;
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </article>
+
+
+            <article class="code-container">
+                <h3 class="project-title">Funkcja Pathfindingowa dla bota w Trylmie</h3>
+                <div class="code-content">
+                    <div class="code-description">
+                        <p>Ta funkcja wyznacza następny ruch bota w grze Trylma (Chińskie Warcaby), funkcja bierze pod uwagę ustawienie innych pionów w grze aby piony bota nie za bardzo oddalały się od siebie
+                            ponieważ utrudniało by to w następnych ruchach skorzystanie z możliwości skoku, co znacznie spowolniło by postęp. O ile funkcja w tej postaci nie zakłada jakiegoś planowania ruchów 
+                            w przyszłość to dba o to aby było ich jak najwiecej.
+                        </p>
+                    </div>
+                    <div class="code-block">
+                        <pre><code>
+private void obliczScore(){
+    int[] poleStart = sekwencjaRuchu[0];
+    int[] poleKoniec = sekwencjaRuchu[sekwencjaRuchu.length-1];
+    int factor = 1;
+    delta = Math.sqrt(Math.pow(poleDocelowe[0] - poleStart[0], 2) + Math.pow(poleDocelowe[1] - poleStart[1], 2))
+            - Math.sqrt(Math.pow(poleDocelowe[0] - poleKoniec[0], 2) + Math.pow(poleDocelowe[1] - poleKoniec[1], 2));
+    jakBardzoZTylu = Math.sqrt(Math.pow(gracz.dajGre().getSredniaPozycjaPionka(gracz.ktoreMiejsce())[0] - poleStart[0], 2)
+            + Math.pow(gracz.dajGre().getSredniaPozycjaPionka(gracz.ktoreMiejsce())[1] - poleStart[1], 2));
+
+    double odlegloscGrupyOdCelu = Math.sqrt(Math.pow(gracz.dajGre().getSredniaPozycjaPionka(gracz.ktoreMiejsce())[0] - poleDocelowe[0], 2)
+            + Math.pow(gracz.dajGre().getSredniaPozycjaPionka(gracz.ktoreMiejsce())[1] - poleDocelowe[1], 2));
+    double odlegloscOdGrupyNasza =Math.sqrt(Math.pow(poleStart[0] - poleDocelowe[0], 2)
+            + Math.pow(poleStart[1] - poleDocelowe[1], 2));
+
+    if(odlegloscGrupyOdCelu > odlegloscOdGrupyNasza){
+        factor = -1;
+    }
+
+    score = w1 * delta + factor * w2 * jakBardzoZTylu;
+
+    for(poleXkoordyXczyzajete pole : Pola) {
+        if (poleStart[0] == pole.k[0] & poleStart[1] == pole.k[1] & pole.b) {
+            score = -1000;
+            break;
+        }
+    }
+    for(poleXkoordyXczyzajete pole : Pola) {
+        if (pole.k[0] == poleDocelowe[0] & pole.k[1] == poleDocelowe[1] & pole.b) {
+            poleDoceloweCzyUkończone = true;
+        }
+    }
+
+    if(poleKoniec[0] == poleDocelowe[0] & poleKoniec[1] == poleDocelowe[1] & poleDoceloweCzyUkończone){
+        score = 1000;
+    }
+
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </article>
+
+
+            <article class="code-container">
+                <h3 class="project-title">A star</h3>
+                <div class="code-content">
+                    <div class="code-description">
+                        <p>Ten kod to implementacja algorytmu pathfindingowego A* potrzebowałem go gdy bawiłem się próbą stworzenia na tyle prostej gry taktycznej
+                            że potrafiłbym do niej napisać w miare działające "AI". Niestety z powodu braku czasu nie doszło to nigdy do czegoś wiekszego nie mniej 
+                        ten algorytm który jest pozostałością tej pracy działał jak należy.</p>
+                    </div>
+                    <div class="code-block">
+                        <pre>
+                            <code>
+public static List&lt;int[]&gt; astar(int[][] grid, int[] start, int[] goal) {
+    int sx = start[0], sy = start[1];
+    int gx = goal[0], gy = goal[1];
+
+    PriorityQueue&lt;Node&gt; openSet = new PriorityQueue&lt;&gt;();
+    Set&lt;String&gt; closedSet = new HashSet&lt;&gt;();
+
+    Node startNode = new Node(sx, sy, 0, heuristic(sx, sy, gx, gy), null);
+    openSet.add(startNode);
+
+    while (!openSet.isEmpty()) {
+        Node current = openSet.poll();
+
+        // Jeśli dotarliśmy do celu - zwracamy ścieżkę
+        if (current.x == gx &amp;&amp; current.y == gy) {
+            return reconstructPath(current);
+        }
+
+        closedSet.add(current.x + "," + current.y);
+
+        for (int[] direction : DIRECTIONS) {
+            int nx = current.x + direction[0];
+            int ny = current.y + direction[1];
+
+            if (nx &gt;= 0 &amp;&amp; ny &gt;= 0 &amp;&amp; nx &lt; grid.length &amp;&amp; ny &lt; grid[0].length &amp;&amp; grid[nx][ny] == 0) {
+                if (closedSet.contains(nx + "," + ny)) continue;
+
+                int gScore = current.g + 1;
+                int hScore = heuristic(nx, ny, gx, gy);
+                Node newNode = new Node(nx, ny, gScore, hScore, current);
+
+                // Sprawdzamy, czy nowy węzeł jest lepszy od już istniejących w openSet
+                boolean shouldAdd = true;
+                for (Node node : openSet) {
+                    if (node.x == nx &amp;&amp; node.y == ny &amp;&amp; gScore &gt;= node.g) {
+                        shouldAdd = false;
+                        break;
+                    }
+                }
+                if (shouldAdd) {
+                    openSet.add(newNode);
+                }
+            }
+        }
+    }
+    return null; // Brak ścieżki
+}
+                            </code>
+                            </pre>
+                    </div>
+                </div>
+            </article>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>Kontakt: jankes040608@gmail.com</p>
+    </footer>
+</body>
+</html>

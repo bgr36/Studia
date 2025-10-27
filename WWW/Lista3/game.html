@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gra</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <body class="game-page"></body>
+    <header>
+        <h1>Gra <button id="menu-toggle" aria-label="Toggle menu">☰</button> </h1>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="nav-link home-page">O mnie</a></li>
+                <li><a href="projects.html" class="nav-link projects-page">Projekty</a></li>
+                <li><a href="interests.html" class="nav-link interests-page">Zainteresowania</a></li>
+                <li><a href="game.html" class="nav-link game-page">Gra</a></li>
+                <li><a href="gallery.html" class="nav-link gallery-page">Galeria</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main id="game-main">
+        <div id="word-container"></div>
+        <div id="hangman-container">
+            <canvas id="hangman-canvas" width="300" height="300"></canvas>
+            <div id="alphabet"></div>
+        </div>
+        <div id="message"></div>
+        <button id="new-game">Nowa gra</button>
+    </main>
+    
+    <footer>
+        <p>Kontakt: jankes040608@gmail.com</p>
+    </footer>
+    <script src="menu.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

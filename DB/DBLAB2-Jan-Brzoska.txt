@@ -1,0 +1,393 @@
+1.
+Tworzę baze danych poleceniem:
+
+CREATE DATABASE aparaty;
+
+Tworze użytkownika poleceniem:
+CREATE USER '279765' @'localhost' IDENTIFIED BY 'Brzoska65';
+
+I nadaje mu uprawnienia:
+GRANT SELECT, INSERT, UPDATE ON aparaty.* TO '279765'@'localhost';
+
+2. Tworze kolejne tabele tymi kwerendami:
+
+CREATE TABLE Matryca (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    przekatna DECIMAL(4,2),
+    rozdzielczosc DECIMAL(3,1),
+    typ VARCHAR(10),
+    CHECK (przekatna >= 0 AND rozdzielczosc >= 0)
+) AUTO_INCREMENT = 100;
+
+CREATE TABLE Obiektyw (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    model VARCHAR(30),
+    minPrzeslona FLOAT,
+    maxPrzeslona FLOAT,
+    CHECK (minPrzeslona >= 0 AND maxPrzeslona >= 0 AND minPrzeslona < maxPrzeslona)
+)AUTO_INCREMENT = 1;
+
+CREATE TABLE Producent (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa VARCHAR(50) NOT NULL,
+    kraj VARCHAR(20) DEFAULT 'nieznany',
+    adresKorespondencyjny VARCHAR(100) DEFAULT 'nieznany'
+)AUTO_INCREMENT = 1;
+
+I na koniec tabelę apparat gdyż wymaga istnienia wcześniejszych table
+
+CREATE TABLE Aparat (
+    model VARCHAR(30) PRIMARY KEY,
+    producent INT,
+    matryca INT,
+    obiektyw INT,
+    waga FLOAT,
+    typ ENUM('kompaktowy', 'lustrzanka', 'profesjonalny', 'inny'),
+    FOREIGN KEY (producent) REFERENCES Producent(ID),
+    FOREIGN KEY (matryca) REFERENCES Matryca(ID),
+    FOREIGN KEY (obiektyw) REFERENCES Obiektyw(ID),
+    CHECK (waga >= 0)
+);
+
+Sprawdzam wykonanie poleceń kwerendami SHOW TABLES oraz DESCRIBE.
+3. Dodaje Przykładowe dane do tabeli producent:
+INSERT INTO Producent (nazwa, kraj, adresKorespondencyjny)
+VALUES
+    ('Canon', 'Japonia', 'Tokyo, Japonia'),
+    ('Nikon', 'Japonia', 'Tokyo, Japonia'),
+    ('Sony', 'Japonia', 'Tokyo, Japonia'),
+    ('Fujifilm', 'Japonia', 'Tokyo, Japonia'),
+    ('Panasonic', 'Japonia', 'Tokyo, Japonia'),
+    ('Xiaomi', 'Chiny', 'Pekin, Chiny'),
+    ('Huawei', 'Chiny', 'Shenzhen, Chiny'),
+    ('DJI', 'Chiny', 'Shenzhen, Chiny'),
+    ('Lenovo', 'Chiny', 'Pekin, Chiny'),
+    ('Meizu', 'Chiny', 'Zhuhai, Chiny'),
+    ('Samsung', 'Korea Południowa', 'Seul, Korea Południowa'),
+    ('LG', 'Korea Południowa', 'Seul, Korea Południowa'),
+    ('Apple', 'USA', 'Cupertino, USA'),
+    ('GoPro', 'USA', 'San Mateo, USA'),
+    ('Pentax', 'Japonia', 'Tokyo, Japonia');
+
+Matryca:
+INSERT INTO Matryca (przekatna, rozdzielczosc, typ)
+VALUES
+    (1.5, 12.1, 'CMOS'),
+    (1.8, 14.2, 'CMOS'),
+    (2.0, 16.0, 'CCD'),
+    (2.3, 18.5, 'CMOS'),
+    (2.5, 20.3, 'CCD'),
+    (2.7, 24.0, 'CMOS'),
+    (3.0, 26.7, 'CMOS'),
+    (1.4, 10.5, 'CMOS'),
+    (1.9, 13.8, 'CCD'),
+    (2.1, 17.0, 'CMOS'),
+    (2.2, 19.4, 'CCD'),
+    (2.6, 21.9, 'CMOS'),
+    (2.8, 25.1, 'CMOS'),
+    (3.2, 28.5, 'CMOS'),
+    (3.5, 30.2, 'CCD');
+
+
+Obiektyw:
+INSERT INTO Obiektyw (model, minPrzeslona, maxPrzeslona)
+VALUES
+    ('EF 50mm f/1.8 STM', 1.8, 22.0),
+    ('EF 24-70mm f/2.8L II', 2.8, 22.0),
+    ('EF-S 18-55mm f/3.5-5.6', 3.5, 22.0),
+    ('EF 70-200mm f/2.8L IS III', 2.8, 32.0),
+    ('EF 16-35mm f/2.8L III', 2.8, 32.0),
+    ('Nikkor 35mm f/1.8G', 1.8, 16.0),
+    ('Nikkor 85mm f/1.4G', 1.4, 22.0),
+    ('Sony 24-70mm f/2.8 GM', 2.8, 22.0),
+    ('Sony 70-200mm f/4 G OSS', 4.0, 22.0),
+    ('Fujinon XF 18-55mm f/2.8-4', 2.8, 16.0),
+    ('Fujinon XF 23mm f/1.4', 1.4, 22.0),
+    ('Panasonic Lumix 25mm f/1.7', 1.7, 16.0),
+    ('Olympus 12-40mm f/2.8', 2.8, 22.0),
+    ('Leica Summilux 50mm f/1.4', 1.4, 16.0),
+    ('Zeiss Otus 85mm f/1.4', 1.4, 22.0);
+
+I Aparat:
+INSERT INTO Aparat (model, producent, matryca, obiektyw, waga, typ)
+VALUES
+    ('Canon EOS R6', 1, 100, 1, 680, 'lustrzanka'),
+    ('Nikon Z6 II', 2, 101, 2, 705, 'lustrzanka'),
+    ('Sony A7 III', 3, 102, 3, 650, 'profesjonalny'),
+    ('Fujifilm X-T4', 4, 103, 4, 607, 'kompaktowy'),
+    ('Panasonic Lumix S5', 5, 104, 5, 714, 'profesjonalny'),
+    ('Xiaomi Mi Camera', 6, 105, 6, 250, 'kompaktowy'),
+    ('Huawei ProCam', 7, 106, 7, 270, 'kompaktowy'),
+    ('DJI Phantom Camera', 8, 107, 8, 1200, 'inny'),
+    ('Lenovo VisionCam', 9, 108, 9, 400, 'kompaktowy'),
+    ('Meizu CamX', 10, 109, 10, 300, 'kompaktowy'),
+    ('Samsung NX1', 11, 110, 11, 700, 'profesjonalny'),
+    ('LG CamPlus', 12, 111, 12, 350, 'inny'),
+    ('Apple iCamera', 13, 112, 13, 200, 'kompaktowy'),
+    ('GoPro Hero10', 14, 113, 14, 153, 'inny'),
+    ('Pentax K-1', 15, 114, 15, 1010, 'lustrzanka');
+
+Przykładowe próby wstawienia błędnych rekordów:
+INSERT INTO Aparat (model, producent, matryca, obiektyw, waga, typ)
+VALUES ('xxx', 1, 100, 1, -50, 'lustrzanka');
+
+INSERT INTO Obiektyw (model, minPrzeslona, maxPrzeslona)
+VALUES ('xxx', 5.6, 3.5);
+
+INSERT INTO Producent (nazwa, kraj, adresKorespondencyjny)
+VALUES (NULL, 'Niemcy', 'Berlin, Niemcy');
+
+4.
+
+DELIMITER $$
+
+CREATE PROCEDURE GenerujModeleAparatowZad4()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE Matryca INT;
+    DECLARE Obiektyw INT;
+    DECLARE Producent INT;
+    DECLARE Typ ENUM('kompaktowy', 'lustrzanka', 'profesjonalny', 'inny');
+    
+    WHILE i <= 100 DO
+        
+        SELECT ID INTO Matryca
+        FROM Matryca
+        ORDER BY RAND()
+        LIMIT 1;
+        
+        
+        SELECT ID INTO Obiektyw
+        FROM Obiektyw
+        ORDER BY RAND()
+        LIMIT 1;
+        
+        
+        SELECT ID INTO Producent
+        FROM Producent
+        ORDER BY RAND()
+        LIMIT 1;
+        
+        
+        SET Typ = ELT(FLOOR(1 + (RAND() * 4)), 'kompaktowy', 'lustrzanka', 'profesjonalny', 'inny');
+        
+       
+        INSERT INTO Aparat (model, producent, matryca, obiektyw, waga, typ)
+        VALUES (
+            CONCAT('Model_', i),
+            Producent,
+            Matryca,
+            Obiektyw,
+            FLOOR(200 + (RAND() * 1500)),
+            Typ
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+END$$
+
+DELIMITER ;
+
+Uzytkownik z zadania 1 nie może stworzyć procedury bo nie ma do tego uprawnień,
+nie może też ich wykonywać bo nie ma uprawnień do EXECUTE
+
+Zad5
+
+DELIMITER $$
+
+CREATE FUNCTION NajmniejszaPrzekatnaMatrycyZad5(producentID INT)
+RETURNS VARCHAR(30)
+BEGIN
+    DECLARE modelAparatu VARCHAR(30);
+    
+    SELECT a.model
+    INTO modelAparatu
+    FROM Aparat a
+    JOIN Matryca m ON a.matryca = m.ID
+    WHERE a.producent = producentID
+    ORDER BY m.przekatna ASC
+    LIMIT 1;
+    
+    RETURN modelAparatu;
+END$$
+
+DELIMITER ;
+
+Zad6
+
+DELIMITER $$
+
+CREATE TRIGGER DodajProducentaJesliBrakujeZad6
+BEFORE INSERT ON Aparat
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM Producent
+        WHERE ID = NEW.producent
+    	) THEN
+        INSERT INTO Producent (ID, nazwa, kraj, adresKorespondencyjny)
+        VALUES (NEW.producent, 'Nieznany', 'Nieznany', 'Nieznany');
+    END IF;
+END$$
+
+DELIMITER ;
+
+Zad7
+
+DELIMITER $$
+
+CREATE FUNCTION LiczbaModeliZDanaMatrycaZad7(matrycaID INT)
+RETURNS INT
+
+BEGIN
+    DECLARE liczbaModeli INT;
+    SELECT COUNT(*)
+    INTO liczbaModeli
+    FROM Aparat
+    WHERE matryca = matrycaID;
+    
+    RETURN liczbaModeli;
+END$$
+
+DELIMITER ;
+
+Zad8 
+
+DELIMITER $$
+
+CREATE TRIGGER UsunMatrycePoUsunieciuAparatuZad8
+AFTER DELETE ON Aparat
+FOR EACH ROW
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM Aparat
+        WHERE matryca = OLD.matryca
+    ) THEN
+        DELETE FROM Matryca
+        WHERE ID = OLD.matryca;
+    END IF;
+END$$
+
+DELIMITER ;
+
+Zad9
+
+CREATE VIEW LustrzankiPozaChinamiZad9 AS
+SELECT 
+    a.model AS ModelAparatu,
+    a.waga AS WagaAparatu,
+    p.nazwa AS NazwaProducenta,
+    m.przekatna AS PrzekatnaMatrycy,
+    m.rozdzielczosc AS RozdzielczoscMatrycy,
+    o.minPrzeslona AS MinimalnaPrzeslona,
+    o.maxPrzeslona AS MaksymalnaPrzeslona
+FROM Aparat a
+JOIN Producent p ON a.producent = p.ID
+JOIN Matryca m ON a.matryca = m.ID
+JOIN Obiektyw o ON a.obiektyw = o.ID
+WHERE 
+    a.typ = 'lustrzanka' AND
+    p.kraj != 'Chiny';
+
+Uzytkownik z zadania 1 nie może stworzyć widoku bo nie ma do tego uprawnień,
+natomiast może z niego skorzystać
+
+Zad 10
+
+Utworzenie Widoku
+
+CREATE VIEW WidokAparatyProducentZad10 AS
+SELECT
+    Aparat.model AS ModelAparatu,
+    Producent.nazwa AS NazwaProducenta,
+    Producent.kraj AS KrajProducenta
+FROM
+    Aparat
+JOIN
+    Producent ON Aparat.producent = Producent.ID;
+
+Kwerenda która usuwa aparaty z chin:
+
+DELETE FROM Aparat
+WHERE producent IN (
+    SELECT ID
+    FROM Producent
+    WHERE kraj = 'Chiny'
+);
+
+Widok odwzorował tą zmianę, nie wyświetla żadnego aparatu wyprodukowanego w chinach
+
+Zad 11
+
+Dodanie kolumny liczbaModeli w Producent:
+
+ALTER TABLE Producent
+ADD COLUMN liczbaModeli INT DEFAULT 0;
+
+Wypełnienie nowej kolumny:
+
+UPDATE Producent
+SET liczbaModeli = (
+    SELECT COUNT(*)
+    FROM Aparat
+    WHERE Aparat.producent = Producent.ID
+);
+
+Tworze trigger który będzie update'ować nową kolumne za każdym dodaniem nowego aparatu
+
+DELIMITER $$
+
+CREATE TRIGGER AktualizujLiczbeModeliPoDodaniuAparatuZad11
+AFTER INSERT ON Aparat
+FOR EACH ROW
+BEGIN
+    UPDATE Producent
+    SET liczbaModeli = liczbaModeli + 1
+    WHERE ID = NEW.producent;
+END;
+
+DELIMITER $$
+
+Tworze trigger który będzie update'ować nową kolumne za każdym usunięciem aparatu
+
+DELIMITER $$
+
+CREATE TRIGGER AktualizujLiczbeModeliPoUsunieciuAparatuZad11
+AFTER DELETE ON Aparat
+FOR EACH ROW
+BEGIN
+    UPDATE Producent
+    SET liczbaModeli = liczbaModeli - 1
+    WHERE ID = OLD.producent;
+END;
+
+DELIMITER $$
+
+Tworze trigger który będzie update'ować nową kolumne za każdą zmianą producenta aparatu
+
+DELIMITER $$
+
+CREATE TRIGGER AktualizujLiczbeModeliPoZmianieProducentaAparatuZad11
+AFTER UPDATE ON Aparat
+FOR EACH ROW
+BEGIN
+    IF OLD.producent != NEW.producent THEN
+        UPDATE Producent
+        SET liczbaModeli = liczbaModeli - 1
+        WHERE ID = OLD.producent;
+
+        UPDATE Producent
+        SET liczbaModeli = liczbaModeli + 1
+        WHERE ID = NEW.producent;
+    END IF;
+END;
+
+DELIMITER $$
+
+Urzytkownik z zadania pierwszego nie może stworzyć triggera gdyż nie ma takich uprawnień,
+natomiast stworzone trigger będą działać na Updatey i Inserty wywołwane przez tego urzytkownika.
+
+
+

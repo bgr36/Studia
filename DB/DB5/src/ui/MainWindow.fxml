@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="160.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.MainWindowController">
+   <children>
+      <Label fx:id="pracownikOrAdmin" layoutX="14.0" layoutY="14.0" prefHeight="18.0" prefWidth="190.0" text="Kto " />
+      <ComboBox fx:id="polecenieComboBox" layoutX="13.0" layoutY="42.0" prefHeight="26.0" prefWidth="580.0" />
+      <TextField fx:id="inputTextField" layoutX="13.0" layoutY="75.0" prefHeight="26.0" prefWidth="580.0" />
+      <Label fx:id="infoLabel" layoutX="13.0" layoutY="107.0" prefHeight="40.0" prefWidth="580.0" wrapText="true" />
+      <Button layoutX="482.0" layoutY="10.0" mnemonicParsing="false" onAction="#wykonajButtonClick" prefHeight="26.0" prefWidth="110.0" text="Wykonaj" />
+   </children>
+</AnchorPane>

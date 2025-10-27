@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="178.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.LoginMenuController">
+   <children>
+      <VBox layoutX="15.0" layoutY="17.0" prefHeight="158.0" prefWidth="190.0" spacing="5.0">
+         <children>
+            <Label prefHeight="18.0" prefWidth="241.0" text="Login:" />
+            <TextField fx:id="loginTextField" />
+            <Label prefHeight="18.0" prefWidth="222.0" text="Hasło:" />
+            <TextField fx:id="passwordTextField" />
+            <Button mnemonicParsing="false" onAction="#login" prefHeight="26.0" prefWidth="252.0" text="Zaloguj" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

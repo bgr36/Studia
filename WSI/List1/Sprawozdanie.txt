@@ -1,0 +1,74 @@
+Wyniki Dla Zad 1
+Zbiór testowy MNIST:
+loss      accuracy
+[0.08287329971790314, 0.9757000207901001]
+MNIST:
+              precision    recall  f1-score   support
+
+           0       0.97      0.99      0.98       980
+           1       0.99      0.99      0.99      1135
+           2       0.96      0.98      0.97      1032
+           3       0.98      0.96      0.97      1010
+           4       0.97      0.98      0.98       982
+           5       0.96      0.99      0.97       892
+           6       0.99      0.97      0.98       958
+           7       0.98      0.97      0.98      1028
+           8       0.99      0.95      0.97       974
+           9       0.97      0.97      0.97      1009
+
+    accuracy                           0.98     10000
+   macro avg       0.98      0.98      0.98     10000
+weighted avg       0.98      0.98      0.98     10000
+
+
+
+
+Mój zbiór testowy:
+loss      accuracy
+[2.1037609577178955, 0.5333333611488342]
+Mój zbiór danych:
+              precision    recall  f1-score   support
+
+           0       1.00      0.67      0.80         3
+           1       0.00      0.00      0.00         3
+           2       0.75      1.00      0.86         3
+           3       0.67      0.67      0.67         3
+           4       1.00      0.33      0.50         3
+           5       0.29      0.67      0.40         3
+           6       0.50      0.33      0.40         3
+           7       0.50      1.00      0.67         3
+           8       1.00      0.67      0.80         3
+           9       0.00      0.00      0.00         3
+
+    accuracy                           0.53        30
+   macro avg       0.57      0.53      0.51        30
+weighted avg       0.57      0.53      0.51        30
+
+Model z 0,4,8 poradził Sobie bardzo dobrze, co oznacza że nasz i akerykanski sposób pisania tych liter jest taki sam, co ma sens
+w ogóle nie. Za to w ogóle Sobie nie poradził z 1,9 i 5  oc by wskazywało że jest jakaś znaczna różnica w pisaniu tych cyfr. Z cyframi
+2,3,6,7 poradził Sobie w miare okej.
+
+
+
+
+
+Zad3:
+Dokładność: 0.9706
+Raport:
+              precision    recall  f1-score   support
+
+           0       0.97      0.99      0.98       980
+           1       0.99      0.99      0.99      1135
+           2       0.96      0.97      0.96      1032
+           3       0.96      0.96      0.96      1010
+           4       0.98      0.97      0.97       982
+           5       0.98      0.96      0.97       892
+           6       0.98      0.98      0.98       958
+           7       0.97      0.96      0.97      1028
+           8       0.96      0.96      0.96       974
+           9       0.96      0.95      0.96      1009
+
+    accuracy                           0.97     10000
+   macro avg       0.97      0.97      0.97     10000
+weighted avg       0.97      0.97      0.97     10000
+
